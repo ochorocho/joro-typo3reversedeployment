@@ -9,5 +9,8 @@
         "psr-4": {
             "JoRo\\": "JoRo/"
         }
-    }
+    },
+    "bin": [
+        "typo3reverse"
+    ]
 }
