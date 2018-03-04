@@ -1,6 +1,13 @@
 {
     "name": "joro/typo3reversedeployment",
-    "license": "MIT",
+    "license": "GPL v3",
+    "authors": [
+        {
+            "name": "Jochen Roth",
+            "email": "rothjochen@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "phpseclib/phpseclib": "^2.0"
     },
