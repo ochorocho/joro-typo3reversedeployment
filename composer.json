@@ -1,5 +1,5 @@
 {
-    "name": "joro/reversedeploy",
+    "name": "joro/typo3reversedeployment",
     "license": "MIT",
     "require": {
         "phpseclib/phpseclib": "^2.0"
