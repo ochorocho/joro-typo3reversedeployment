@@ -36,5 +36,6 @@ $reverseDeploy->getDatabase($ssh);
 /**
  * Get fileadmin
  */
+$reverseDeploy->setFileadminTarget("./fileadmin/");
 $reverseDeploy->getFileadmin($ssh);
 ```
