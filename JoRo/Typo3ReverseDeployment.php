@@ -22,11 +22,16 @@ Class Typo3ReverseDeployment {
     protected $typo3RootPath = "/var/www/typo3/";
 
     /**
+     * @var string
+     */
+    protected $connectionPool = "Default";
+
+    /**
      * Target path for sql file
      *
      * @var string
      */
-    protected $sqlTarget = "./tmp/";
+    protected $sqlTarget = "./sql/";
 
     /**
      * Tables to exclude during export
@@ -85,6 +90,22 @@ Class Typo3ReverseDeployment {
     public function setTypo3RootPath($typo3RootPath)
     {
         $this->typo3RootPath = $typo3RootPath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConnectionPool()
+    {
+        return $this->connectionPool;
+    }
+
+    /**
+     * @param string $connectionPool
+     */
+    public function setConnectionPool($connectionPool)
+    {
+        $this->connectionPool = $connectionPool;
     }
 
     /**
@@ -150,7 +171,7 @@ Class Typo3ReverseDeployment {
         $phpConfig = str_replace('<?php', '', $remoteConf);
         $conf = eval($phpConfig);
 
-        return $conf['DB']['Connections']['Default'];
+        return $conf['DB']['Connections'][$this->getConnectionPool()];
     }
 
     /**
@@ -158,8 +179,6 @@ Class Typo3ReverseDeployment {
      * @return string
      */
     public function getDatabase($ssh) {
-
-        $conf = $this->getLocalConfiguration($ssh);
 
         /**
          * Build --exclude-tables for `typo3cms database:export` command
@@ -181,5 +200,36 @@ Class Typo3ReverseDeployment {
         $ssh->exec("rm -f $sqlRemoteTarget");
 
         return $sqlRemoteTarget;
+    }
+
+    public function getFileadmin($ssh) {
+        $conf = $this->getLocalConfiguration($ssh);
+
+        if($conf['driver'] == 'mysqli') {
+
+            $fileadminRemote = $this->getTypo3RootPath() . 'fileadmin/';
+            $tempPhp = sys_get_temp_dir() . '.rsync_files';
+
+            /**
+             * Select only files with references (only used files)
+             * @query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
+             */
+            $files = $ssh->exec("mysql ".$conf['dbname']." -u ".$conf['user']." -p".$conf['password']." -se \"SELECT identifier FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid\"");
+
+            /**
+             * Create .rsync_files containing a list of files to download
+             */
+            file_put_contents($tempPhp, $files);
+
+            /**
+             * Download files in list
+             */
+            exec('rsync -avz --files-from='.$tempPhp.' '.$this->getUser().'@'.$ssh->host.':'.$fileadminRemote.' ./fileadmin/');
+
+        } else {
+            exit("\e[31mDatabase Driver " . $conf['driver'] . " not supported!\e[0m" . PHP_EOL);
+        }
+
+        return true;
     }
 }
