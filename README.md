@@ -5,4 +5,34 @@ Features:
 * Export TYPO3 Database and download (exclude tables)
 * Download only referenced files to your lokal fileadmin
 
-...
+Usage:
+
+```php
+include __DIR__ . '/vendor/autoload.php';
+
+$reverseDeploy = new \JoRo\Typo3ReverseDeployment();
+
+/**
+ * Set TYPO3 root path
+ */
+$reverseDeploy->setTypo3RootPath('/var/www/typo3.knallimall.org/web/releases/current/html/');
+
+/**
+ * Connect to Server
+ */
+$reverseDeploy->setPubKey(getenv("HOME") . '/.ssh/id_rsa');
+$reverseDeploy->setUser('jochen');
+$ssh = $reverseDeploy->ssh('knallimall.org');
+
+/**
+ * Get database
+ */
+$reverseDeploy->setSqlExcludeTable(['sys_log']);
+$reverseDeploy->setSqlTarget("./tmp/");
+$reverseDeploy->getDatabase($ssh);
+
+/**
+ * Get fileadmin
+ */
+$reverseDeploy->getFileadmin($ssh);
+```
