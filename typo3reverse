@@ -3,4 +3,4 @@
 
 include __DIR__ . '/vendor/autoload.php';
 
-echo "Test output";
+echo "Test output" . PHP_EOL;
