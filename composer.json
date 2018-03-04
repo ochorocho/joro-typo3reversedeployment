@@ -1,13 +1,7 @@
 {
     "name": "joro/typo3reversedeployment",
+    "description": "Export DB and referenced files to your TYPO3 dev installation",
     "license": "GPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "Jochen Roth",
-            "email": "rothjochen@gmail.com",
-            "role": "Developer"
-        }
-    ],
     "require": {
         "phpseclib/phpseclib": "^2.0"
     },
