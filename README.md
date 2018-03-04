@@ -5,6 +5,8 @@ Features:
 * Export TYPO3 Database and download (exclude tables)
 * Download only referenced files to your local fileadmin
 
+Requires [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) on remote TYPO3 installation
+
 Usage:
 
 ```php
