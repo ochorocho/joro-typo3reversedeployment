@@ -31,6 +31,13 @@ Class Typo3ReverseDeployment {
      *
      * @var string
      */
+    protected $fileadminTarget = "./fileadmin/";
+
+    /**
+     * Target path for sql file
+     *
+     * @var string
+     */
     protected $sqlTarget = "./sql/";
 
     /**
@@ -111,6 +118,22 @@ Class Typo3ReverseDeployment {
     /**
      * @return string
      */
+    public function getFileadminTarget()
+    {
+        return $this->fileadminTarget;
+    }
+
+    /**
+     * @param string $fileadminTarget
+     */
+    public function setFileadminTarget($fileadminTarget)
+    {
+        $this->fileadminTarget = $fileadminTarget;
+    }
+
+    /**
+     * @return string
+     */
     public function getSqlTarget()
     {
         return $this->sqlTarget;
@@ -180,6 +203,8 @@ Class Typo3ReverseDeployment {
      */
     public function getDatabase($ssh) {
 
+        $conf = $this->getLocalConfiguration($ssh);
+
         /**
          * Build --exclude-tables for `typo3cms database:export` command
          */
@@ -224,7 +249,7 @@ Class Typo3ReverseDeployment {
             /**
              * Download files in list
              */
-            exec('rsync -avz --files-from='.$tempPhp.' '.$this->getUser().'@'.$ssh->host.':'.$fileadminRemote.' ./fileadmin/');
+            exec('rsync -avz --files-from='.$tempPhp.' '.$this->getUser().'@'.$ssh->host.':'.$fileadminRemote . " " . $this->getFileadminTarget());
 
         } else {
             exit("\e[31mDatabase Driver " . $conf['driver'] . " not supported!\e[0m" . PHP_EOL);
