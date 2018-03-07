@@ -22,7 +22,7 @@ $reverseDeploy->setTypo3RootPath('/var/www/typo3.knallimall.org/web/releases/cur
 /**
  * Connect to Server
  */
-$reverseDeploy->setPubKey(getenv("HOME") . '/.ssh/id_rsa');
+$reverseDeploy->setPrivateKey(getenv("HOME") . '/.ssh/id_rsa');
 $reverseDeploy->setUser('jochen');
 $ssh = $reverseDeploy->ssh('knallimall.org');
 

@@ -13,7 +13,7 @@ Class Typo3ReverseDeployment
     /**
      * @var string
      */
-    protected $pubKey = "~/.ssh/id_rsa";
+    protected $privateKey = "~/.ssh/id_rsa";
 
     /**
      * LocalConfiguration.php
@@ -67,21 +67,21 @@ Class Typo3ReverseDeployment
     /**
      * @return string
      */
-    public function getPubKey()
+    public function getPrivateKey()
     {
-        if (substr($this->pubKey, 0, 2) == "~/") {
-            $this->pubKey = str_replace('~/', getenv("HOME") . '/', $this->pubKey);
+        if (substr($this->privateKey, 0, 2) == "~/") {
+            $this->privateKey = str_replace('~/', getenv("HOME") . '/', $this->privateKey);
         };
 
-        return $this->pubKey;
+        return $this->privateKey;
     }
 
     /**
-     * @param string $pubKey
+     * @param string $privateKey
      */
-    public function setPubKey($pubKey)
+    public function setPrivateKey($privateKey)
     {
-        $this->pubKey = $pubKey;
+        $this->privateKey = $privateKey;
     }
 
     /**
@@ -174,7 +174,7 @@ Class Typo3ReverseDeployment
     public function ssh($host)
     {
         $key = new \phpseclib\Crypt\RSA();
-        $key->loadKey(file_get_contents($this->getPubKey()));
+        $key->loadKey(file_get_contents($this->getPrivateKey()));
 
         $ssh = new \phpseclib\Net\SSH2($host);
         if (!$ssh->login($this->getUser(), $key)) {
