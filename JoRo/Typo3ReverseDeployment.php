@@ -16,6 +16,12 @@ Class Typo3ReverseDeployment
     protected $privateKey = "~/.ssh/id_rsa";
 
     /**
+     * Optional private key passphrase
+     * @var string
+     */
+    protected $privateKeyPassphrase = '';
+
+    /**
      * LocalConfiguration.php
      *
      * @var string
@@ -82,6 +88,20 @@ Class Typo3ReverseDeployment
     public function setPrivateKey($privateKey)
     {
         $this->privateKey = $privateKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrivateKeyPassphrase() {
+        return $this->privateKeyPassphrase;
+    }
+
+    /**
+     * @param string $privateKeyPassphrase
+     */
+    public function setPrivateKeyPassphrase($privateKeyPassphrase) {
+        $this->privateKeyPassphrase = $privateKeyPassphrase;
     }
 
     /**
@@ -174,6 +194,9 @@ Class Typo3ReverseDeployment
     public function ssh($host)
     {
         $key = new \phpseclib\Crypt\RSA();
+        if($passphrase = $this->getPrivateKeyPassphrase()) {
+            $key->setPassword($passphrase);
+        }
         $key->loadKey(file_get_contents($this->getPrivateKey()));
 
         $ssh = new \phpseclib\Net\SSH2($host);
