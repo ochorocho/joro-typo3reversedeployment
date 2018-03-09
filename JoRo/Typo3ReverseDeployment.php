@@ -305,8 +305,13 @@ Class Typo3ReverseDeployment
             /**
              * Download files in list
              */
+            $sshPortParam = '';
+            if($ssh->port != 22) {
+                $sshPortParam = '-e "ssh -p ' . $ssh->port . '"';
+            }
+
             echo "\033[32mDownload fileadmin: " . $this->getFileadminTarget() . "\033[0m" . PHP_EOL;
-            exec('rsync -avz --files-from=' . $tempPhp . ' ' . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileadminTarget());
+            exec('rsync -avz ' . $sshPortParam . ' --files-from=' . $tempPhp . ' ' . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileadminTarget());
 
         } else {
             exit("\e[31mDatabase Driver " . $conf['driver'] . " not supported!\e[0m" . PHP_EOL);
