@@ -244,7 +244,7 @@ Class Typo3ReverseDeployment
              * Select only files with references (only used files)
              * @query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
              */
-            $files = $ssh->exec("mysql " . $conf['dbname'] . " -u " . $conf['user'] . " -p" . $conf['password'] . " -se \"SELECT identifier FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid\"");
+            $files = $ssh->exec("mysql " . $conf['dbname'] . " -u " . $conf['user'] . " -p" . $conf['password'] . " -h" . $conf['host'] . " -se \"SELECT identifier FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid\"");
 
             /**
              * Create .rsync_files containing a list of files to download
