@@ -16,6 +16,11 @@ Class Typo3ReverseDeployment
     protected $privateKey = "~/.ssh/id_rsa";
 
     /**
+     * @var int
+     */
+    protected $sshPort = 22;
+
+    /**
      * Optional private key passphrase
      * @var string
      */
@@ -95,6 +100,22 @@ Class Typo3ReverseDeployment
      */
     public function getPrivateKeyPassphrase() {
         return $this->privateKeyPassphrase;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSshPort()
+    {
+        return $this->sshPort;
+    }
+
+    /**
+     * @param int $sshPort
+     */
+    public function setSshPort($sshPort)
+    {
+        $this->sshPort = $sshPort;
     }
 
     /**
@@ -197,9 +218,10 @@ Class Typo3ReverseDeployment
         if($passphrase = $this->getPrivateKeyPassphrase()) {
             $key->setPassword($passphrase);
         }
-        $key->loadKey(file_get_contents($this->getPrivateKey()));
 
-        $ssh = new \phpseclib\Net\SSH2($host);
+        $key->loadKey(file_get_contents($this->getPrivateKey()));
+        $ssh = new \phpseclib\Net\SSH2($host, $this->getSshPort());
+
         if (!$ssh->login($this->getUser(), $key)) {
             exit("\033[31mLogin Failed\033[0m" . PHP_EOL);
         } else {
