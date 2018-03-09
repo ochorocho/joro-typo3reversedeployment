@@ -270,7 +270,13 @@ Class Typo3ReverseDeployment
 
         echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
         $ssh->exec($sqlExport . " $ignoredTables > $sqlRemoteTarget");
-        exec("rsync -avz " . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
+
+        $sshPortParam = '';
+        if($ssh->port != 22) {
+            $sshPortParam = '-e "ssh -p ' . $ssh->port . '"';
+        }
+
+        exec("rsync -avz $sshPortParam " . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
         $ssh->exec("rm -f $sqlRemoteTarget");
 
         return $sqlRemoteTarget;
