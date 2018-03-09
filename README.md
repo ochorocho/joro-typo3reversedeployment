@@ -39,3 +39,34 @@ $reverseDeploy->getDatabase($ssh);
 $reverseDeploy->setFileadminTarget("./fileadmin/");
 $reverseDeploy->getFileadmin($ssh);
 ```
+
+Use SSH-Key with passphrase
+---------------------------
+
+You can define your passphrase like shown in this example:
+
+```php
+/**
+ * Connect to Server
+ */
+$reverseDeploy->setPrivateKeyPassphrase('mypassword');
+$reverseDeploy->setUser('jochen');
+$ssh = $reverseDeploy->ssh('knallimall.org');
+```
+
+If you do not want to have your passphrase stored in a file, you can use an environment variable:
+
+```php
+/**
+ * Connect to Server
+ */
+$reverseDeploy->setPrivateKeyPassphrase(getenv('PASSPHRASE'));
+$reverseDeploy->setUser('jochen');
+$ssh = $reverseDeploy->ssh('knallimall.org');
+```
+
+Then you can start the reverse deployment with a command like this:
+
+```
+PASSPHRASE=mypassword php your-reverse-deployment-definition.php
+```
