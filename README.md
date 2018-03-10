@@ -10,7 +10,6 @@ Requires [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) on
 Usage:
 
 ```php
-include __DIR__ . '/vendor/autoload.php';
 
 $reverseDeploy = new \JoRo\Typo3ReverseDeployment();
 
@@ -68,5 +67,5 @@ $ssh = $reverseDeploy->ssh('knallimall.org');
 Then you can start the reverse deployment with a command like this:
 
 ```
-PASSPHRASE=mypassword php your-reverse-deployment-definition.php
+PASSPHRASE=mypassword vendor/bin/typo3reverse
 ```
