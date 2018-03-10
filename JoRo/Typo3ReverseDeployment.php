@@ -55,7 +55,12 @@ Class Typo3ReverseDeployment
     /**
      * @var array
      */
-    protected $excludeFolders = ["_processed_","_temp_"];
+    protected $excludeFolders = ["_processed_","_temp_","typo3conf","typo3","typo3temp","index.php"];
+
+    /**
+     * @var array
+     */
+    protected $includeFolders = ["fileadmin"];
 
     /**
      * Target path for sql file
@@ -226,6 +231,22 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * @return array
+     */
+    public function getIncludeFolders()
+    {
+        return $this->includeFolders;
+    }
+
+    /**
+     * @param array $includeFolders
+     */
+    public function setIncludeFolders($includeFolders)
+    {
+        $this->includeFolders = $includeFolders;
+    }
+
+    /**
      * @return string
      */
     public function getSqlTarget()
@@ -339,13 +360,15 @@ Class Typo3ReverseDeployment
 
         $exludedFolders = " --exclude={" . implode(",", $this->getExcludeFolders()) . "} ";
 
-        $fileadminRemote = $this->getTypo3RootPath() . 'fileadmin/';
+        $includeFolders = " --include={" . implode(",", $this->getIncludeFolders()) . "} ";
+
+        $fileadminRemote = $this->getTypo3RootPath();
 
         /**
          * Download files in list
          */
-        echo "\033[32mDownload files: " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
-        exec('rsync -avz ' . $this->getSshPortParam() . $filesFrom . $exludedFolders . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
+        echo "\033[32mDownload files to " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
+        exec('rsync -avz -L ' . $this->getSshPortParam() . $filesFrom . $exludedFolders . $includeFolders . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
 
         return true;
     }
@@ -364,12 +387,20 @@ Class Typo3ReverseDeployment
 
             /**
              * Create .rsync_files containing a list of files to download
+             * prefix with /fileadmin
              */
-            file_put_contents($tempPhp, $files);
+            $i = 0;
+            $files = explode("\n", $files);
+            $files = array_filter($files);
+            foreach($files as $file) {
+                $files[$i] =  '/fileadmin' . $file;
+                $i++;
+            };
+            file_put_contents($tempPhp, implode("\n", $files));
 
 
         } else {
-            exit("\e[31mDatabase Driver " . $conf['driver'] . " not supported!\e[0m" . PHP_EOL);
+            exit("\033[31mDatabase Driver " . $conf['driver'] . " not supported!\033[0m" . PHP_EOL);
         }
         return $tempPhp;
     }
