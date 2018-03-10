@@ -39,11 +39,23 @@ Class Typo3ReverseDeployment
     protected $connectionPool = "Default";
 
     /**
-     * Target path for sql file
+     * Target path for fileadmin
      *
      * @var string
      */
-    protected $fileadminTarget = "./fileadmin/";
+    protected $fileTarget = "./fileadmin/";
+
+    /**
+     * Target path for fileadmin
+     *
+     * @var int
+     */
+    protected $fileadminOnlyUsed = false;
+
+    /**
+     * @var array
+     */
+    protected $excludeFolders = ["_processed_","_temp_"];
 
     /**
      * Target path for sql file
@@ -168,17 +180,49 @@ Class Typo3ReverseDeployment
     /**
      * @return string
      */
-    public function getFileadminTarget()
+    public function getFileTarget()
     {
-        return $this->fileadminTarget;
+        return $this->fileTarget;
     }
 
     /**
-     * @param string $fileadminTarget
+     * @param string $fileTarget
      */
-    public function setFileadminTarget($fileadminTarget)
+    public function setFileTarget($fileTarget)
     {
-        $this->fileadminTarget = $fileadminTarget;
+        $this->fileTarget = $fileTarget;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFileadminOnlyUsed()
+    {
+        return $this->fileadminOnlyUsed;
+    }
+
+    /**
+     * @param int $fileadminOnlyUsed
+     */
+    public function setFileadminOnlyUsed($fileadminOnlyUsed)
+    {
+        $this->fileadminOnlyUsed = $fileadminOnlyUsed;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExcludeFolders()
+    {
+        return $this->excludeFolders;
+    }
+
+    /**
+     * @param array $excludeFolders
+     */
+    public function setExcludeFolders($excludeFolders)
+    {
+        $this->excludeFolders = $excludeFolders;
     }
 
     /**
@@ -285,13 +329,31 @@ Class Typo3ReverseDeployment
         return $sqlRemoteTarget;
     }
 
-    public function getFileadmin($ssh)
+    public function getFiles($ssh)
     {
-        $conf = $this->getLocalConfiguration($ssh);
+        $filesFrom = '';
+        if($this->getFileadminOnlyUsed()) {
+            $tempPhp = $this->getUsedFiles($ssh);
+            $filesFrom = ' --files-from=' . $tempPhp . ' ';
+        }
 
+        $exludedFolders = " --exclude={" . implode(",", $this->getExcludeFolders()) . "} ";
+
+        $fileadminRemote = $this->getTypo3RootPath() . 'fileadmin/';
+
+        /**
+         * Download files in list
+         */
+        echo "\033[32mDownload files: " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
+        exec('rsync -avz ' . $this->getSshPortParam() . $filesFrom . $exludedFolders . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
+
+        return true;
+    }
+
+    private function getUsedFiles($ssh) {
+        $conf = $this->getLocalConfiguration($ssh);
         if ($conf['driver'] == 'mysqli') {
 
-            $fileadminRemote = $this->getTypo3RootPath() . 'fileadmin/';
             $tempPhp = sys_get_temp_dir() . '.rsync_files';
 
             /**
@@ -305,16 +367,10 @@ Class Typo3ReverseDeployment
              */
             file_put_contents($tempPhp, $files);
 
-            /**
-             * Download files in list
-             */
-            echo "\033[32mDownload fileadmin: " . $this->getFileadminTarget() . "\033[0m" . PHP_EOL;
-            exec('rsync -avz ' . $this->getSshPortParam() . ' --files-from=' . $tempPhp . ' ' . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileadminTarget());
 
         } else {
             exit("\e[31mDatabase Driver " . $conf['driver'] . " not supported!\e[0m" . PHP_EOL);
         }
-
-        return true;
+        return $tempPhp;
     }
 }
