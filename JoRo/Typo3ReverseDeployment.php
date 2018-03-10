@@ -55,12 +55,12 @@ Class Typo3ReverseDeployment
     /**
      * @var array
      */
-    protected $excludeFolders = ["_processed_","_temp_","typo3conf","typo3","typo3temp","index.php"];
+    protected $exclude = ["_processed_","_temp_","typo3conf","typo3","typo3temp","index.php"];
 
     /**
      * @var array
      */
-    protected $includeFolders = ["fileadmin"];
+    protected $include = ["fileadmin"];
 
     /**
      * Target path for sql file
@@ -217,33 +217,33 @@ Class Typo3ReverseDeployment
     /**
      * @return array
      */
-    public function getExcludeFolders()
+    public function getExclude()
     {
-        return $this->excludeFolders;
+        return $this->exclude;
     }
 
     /**
-     * @param array $excludeFolders
+     * @param array $exclude
      */
-    public function setExcludeFolders($excludeFolders)
+    public function setExclude($exclude)
     {
-        $this->excludeFolders = $excludeFolders;
+        $this->exclude = $exclude;
     }
 
     /**
      * @return array
      */
-    public function getIncludeFolders()
+    public function getInclude()
     {
-        return $this->includeFolders;
+        return $this->include;
     }
 
     /**
-     * @param array $includeFolders
+     * @param array $include
      */
-    public function setIncludeFolders($includeFolders)
+    public function setInclude($include)
     {
-        $this->includeFolders = $includeFolders;
+        $this->include = $include;
     }
 
     /**
@@ -358,9 +358,8 @@ Class Typo3ReverseDeployment
             $filesFrom = ' --files-from=' . $tempPhp . ' ';
         }
 
-        $exludedFolders = " --exclude={" . implode(",", $this->getExcludeFolders()) . "} ";
-
-        $includeFolders = " --include={" . implode(",", $this->getIncludeFolders()) . "} ";
+        $exlude = " --exclude={" . implode(",", $this->getExclude()) . "} ";
+        $include = " --include={" . implode(",", $this->getInclude()) . "} ";
 
         $fileadminRemote = $this->getTypo3RootPath();
 
@@ -368,7 +367,7 @@ Class Typo3ReverseDeployment
          * Download files in list
          */
         echo "\033[32mDownload files to " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
-        exec('rsync -avz -L ' . $this->getSshPortParam() . $filesFrom . $exludedFolders . $includeFolders . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
+        exec('rsync -avz -L ' . $this->getSshPortParam() . $filesFrom . $include . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
 
         return true;
     }
