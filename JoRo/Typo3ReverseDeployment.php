@@ -119,6 +119,14 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * @param string $sshPortParam
+     */
+    public function getSshPortParam()
+    {
+        $this->sshPortParam = '-e "ssh -p ' . $this->sshPort . '"';
+    }
+
+    /**
      * @param string $privateKeyPassphrase
      */
     public function setPrivateKeyPassphrase($privateKeyPassphrase) {
@@ -271,12 +279,7 @@ Class Typo3ReverseDeployment
         echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
         $ssh->exec($sqlExport . " $ignoredTables > $sqlRemoteTarget");
 
-        $sshPortParam = '';
-        if($ssh->port != 22) {
-            $sshPortParam = '-e "ssh -p ' . $ssh->port . '"';
-        }
-
-        exec("rsync -avz $sshPortParam " . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
+        exec("rsync -avz " . $this->getSshPortParam() . ' ' . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
         $ssh->exec("rm -f $sqlRemoteTarget");
 
         return $sqlRemoteTarget;
@@ -305,13 +308,8 @@ Class Typo3ReverseDeployment
             /**
              * Download files in list
              */
-            $sshPortParam = '';
-            if($ssh->port != 22) {
-                $sshPortParam = '-e "ssh -p ' . $ssh->port . '"';
-            }
-
             echo "\033[32mDownload fileadmin: " . $this->getFileadminTarget() . "\033[0m" . PHP_EOL;
-            exec('rsync -avz ' . $sshPortParam . ' --files-from=' . $tempPhp . ' ' . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileadminTarget());
+            exec('rsync -avz ' . $this->getSshPortParam() . ' --files-from=' . $tempPhp . ' ' . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileadminTarget());
 
         } else {
             exit("\e[31mDatabase Driver " . $conf['driver'] . " not supported!\e[0m" . PHP_EOL);
