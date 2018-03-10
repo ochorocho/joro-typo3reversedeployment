@@ -14,7 +14,17 @@ use TYPO3\Flow\Utility\Files;
 
 $factory = new \JoRo\ReversePath();
 
-print_r($factory->getDeploymentsBasePath());
-echo PHP_EOL;
-print_r($factory->getDeploymentNames());
-echo PHP_EOL;
+if(in_array($argv[1],$factory->getDeploymentNames())) {
+    $deploymentName = $argv[1];
+} else {
+    $deploymentName = $factory->getDeploymentNames()[0];
+}
+
+$includeDeployment = $factory->getDeploymentsBasePath() . '/' . $deploymentName . ".php";
+
+if(is_file($includeDeployment)) {
+    echo "\033[32mStarting reverse deployment '" . $deploymentName . "' ...\033[0m" . PHP_EOL;
+    include_once($includeDeployment);
+} else {
+    exit("\033[31mThis is not a file ...\033[0m" . PHP_EOL);
+}
