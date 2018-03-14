@@ -9,7 +9,10 @@ Requires [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) on
 
 Usage:
 
+1) Create a new file in folder `.reverse`, e.g. `.reverse/remote.php`
+
 ```php
+<?php
 
 $reverseDeploy = new \JoRo\Typo3ReverseDeployment();
 
@@ -39,6 +42,8 @@ $reverseDeploy->getDatabase($ssh);
 $reverseDeploy->setFileadminTarget("./fileadmin/");
 $reverseDeploy->getFileadmin($ssh);
 ```
+
+2) Run `vendor/bin/typo3reverse`
 
 Use SSH-Key with passphrase
 ---------------------------
