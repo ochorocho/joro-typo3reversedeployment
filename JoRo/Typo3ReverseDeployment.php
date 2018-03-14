@@ -77,6 +77,13 @@ Class Typo3ReverseDeployment
     protected $sqlExcludeTable = ["sys_log", "sys_history", "cf_cache_hash", "cf_cache_hash_tags", "cf_extbase_datamapfactory_datamap", "cf_extbase_datamapfactory_datamap_tags", "cf_extbase_object", "cf_extbase_object_tags", "cf_extbase_reflection", "cf_extbase_reflection_tags"];
 
     /**
+     * Full path to PHP binary
+     *
+     * @var string
+     */
+    protected $phpPathAndBinary = "php";
+
+    /**
      * @return string
      */
     public function getUser()
@@ -279,6 +286,20 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * @return string
+     */
+    public function getPhpPathAndBinary() {
+        return $this->phpPathAndBinary;
+    }
+
+    /**
+     * @param string $phpPathAndBinary
+     */
+    public function setPhpPathAndBinary($phpPathAndBinary) {
+        $this->phpPathAndBinary = $phpPathAndBinary;
+    }
+
+    /**
      * Connect to Server via SSH
      *
      * @param $host
@@ -339,7 +360,7 @@ Class Typo3ReverseDeployment
          * Export and download database
          */
         $sqlRemoteTarget = $this->getTypo3RootPath() . 'typo3temp/' . date("Ymds") . "-" . $conf['dbname'] . ".sql";
-        $sqlExport = "cd " . $this->getTypo3RootPath() . " && ../vendor/bin/typo3cms database:export";
+        $sqlExport = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary() . " ../vendor/bin/typo3cms database:export";
 
         echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
         $ssh->exec($sqlExport . " $ignoredTables > $sqlRemoteTarget");
