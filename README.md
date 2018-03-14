@@ -14,9 +14,10 @@ Usage:
 $reverseDeploy = new \JoRo\Typo3ReverseDeployment();
 
 /**
- * Set TYPO3 root path
+ * Set server paths
  */
 $reverseDeploy->setTypo3RootPath('/var/www/typo3.knallimall.org/web/releases/current/html/');
+// optional: $reverseDeploy->setPhpPathAndBinary('/usr/local/bin/php_cli');
 
 /**
  * Connect to Server
