@@ -285,7 +285,7 @@ Class Typo3ReverseDeployment
     /**
      * Set Target Filename/Folder
      * - When path and filename given it will override existing file e.g. ./folder/dump.sql
-     * - When only path to folder given a filename based on date and dbname will be created e.g. 2018031336-dbname.sql
+     * - When only path to folder given a filename based on date and dbname will be created e.g. ./folder/2018031336-dbname.sql
      *
      * @param string $sqlTarget
      */
