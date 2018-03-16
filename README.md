@@ -19,15 +19,15 @@ $reverseDeploy = new \JoRo\Typo3ReverseDeployment();
 /**
  * Set server paths
  */
-$reverseDeploy->setTypo3RootPath('/var/www/typo3.knallimall.org/web/releases/current/html/');
+$reverseDeploy->setTypo3RootPath('/var/www/html/');
 // optional: $reverseDeploy->setPhpPathAndBinary('/usr/local/bin/php_cli');
 
 /**
  * Connect to Server
  */
 $reverseDeploy->setPrivateKey(getenv("HOME") . '/.ssh/id_rsa');
-$reverseDeploy->setUser('jochen');
-$ssh = $reverseDeploy->ssh('knallimall.org');
+$reverseDeploy->setUser('USERNAME');
+$ssh = $reverseDeploy->ssh('example.org');
 
 /**
  * Get database
@@ -39,8 +39,8 @@ $reverseDeploy->getDatabase($ssh);
 /**
  * Get fileadmin
  */
-$reverseDeploy->setFileadminTarget("./fileadmin/");
-$reverseDeploy->getFileadmin($ssh);
+$reverseDeploy->setFileTarget("./fileadmin/");
+$reverseDeploy->getFiles($ssh);
 ```
 
 2) Run `vendor/bin/typo3reverse`
@@ -55,8 +55,8 @@ You can define your passphrase like shown in this example:
  * Connect to Server
  */
 $reverseDeploy->setPrivateKeyPassphrase('mypassword');
-$reverseDeploy->setUser('jochen');
-$ssh = $reverseDeploy->ssh('knallimall.org');
+$reverseDeploy->setUser('USERNAME');
+$ssh = $reverseDeploy->ssh('example.org');
 ```
 
 If you do not want to have your passphrase stored in a file, you can use an environment variable:
@@ -66,8 +66,8 @@ If you do not want to have your passphrase stored in a file, you can use an envi
  * Connect to Server
  */
 $reverseDeploy->setPrivateKeyPassphrase(getenv('PASSPHRASE'));
-$reverseDeploy->setUser('jochen');
-$ssh = $reverseDeploy->ssh('knallimall.org');
+$reverseDeploy->setUser('USERNAME');
+$ssh = $reverseDeploy->ssh('example.org');
 ```
 
 Then you can start the reverse deployment with a command like this:
