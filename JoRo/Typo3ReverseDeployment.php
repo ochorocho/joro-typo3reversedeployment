@@ -11,75 +11,76 @@ Class Typo3ReverseDeployment
     protected $user = "root";
 
     /**
-     * @var string
+     * @var string $privateKey
      */
     protected $privateKey = "~/.ssh/id_rsa";
 
     /**
-     * @var int
+     * @var int $sshPort
      */
     protected $sshPort = 22;
 
     /**
      * Optional private key passphrase
-     * @var string
+     *
+     * @var string $privateKeyPassphrase
      */
     protected $privateKeyPassphrase = '';
 
     /**
      * LocalConfiguration.php
      *
-     * @var string
+     * @var string $typo3RootPath
      */
     protected $typo3RootPath = "/var/www/typo3/";
 
     /**
-     * @var string
+     * @var string $connectionPool
      */
     protected $connectionPool = "Default";
 
     /**
      * Target path for fileadmin
      *
-     * @var string
+     * @var string $fileTarget
      */
     protected $fileTarget = "./fileadmin/";
 
     /**
      * Target path for fileadmin
      *
-     * @var int
+     * @var int $fileadminOnlyUsed
      */
     protected $fileadminOnlyUsed = false;
 
     /**
-     * @var array
+     * @var array $exclude
      */
     protected $exclude = ["_processed_","_temp_","typo3conf","typo3","typo3temp","index.php"];
 
     /**
-     * @var array
+     * @var array $include
      */
     protected $include = ["fileadmin"];
 
     /**
      * Target path for sql file
      *
-     * @var string
+     * @var string $sqlTarget
      */
     protected $sqlTarget = "./sql/";
 
     /**
      * Tables to exclude during export
      *
-     * @var array
+     * @var array $sqlExcludeTable
      */
     protected $sqlExcludeTable = ["sys_log", "sys_history", "cf_cache_hash", "cf_cache_hash_tags", "cf_extbase_datamapfactory_datamap", "cf_extbase_datamapfactory_datamap_tags", "cf_extbase_object", "cf_extbase_object_tags", "cf_extbase_reflection", "cf_extbase_reflection_tags"];
 
     /**
      * Full path to PHP binary
      *
-     * @var string
+     * @var string $phpPathAndBinary
      */
     protected $phpPathAndBinary = "php";
 
@@ -92,6 +93,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Set username for ssh connection
+     *
      * @param string $user
      */
     public function setUser($user)
@@ -100,6 +103,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get path to Private Key file
+     *
      * @return string
      */
     public function getPrivateKey()
@@ -112,6 +117,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Set path to Private Key file
+     *
      * @param string $privateKey
      */
     public function setPrivateKey($privateKey)
@@ -120,6 +127,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get Passphrase for Private Key file
+     *
      * @return string
      */
     public function getPrivateKeyPassphrase() {
@@ -127,6 +136,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get ssh port (default: 22)
+     *
      * @return int
      */
     public function getSshPort()
@@ -135,6 +146,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Set custom ssh port (default: 22)
+     *
      * @param int $sshPort
      */
     public function setSshPort($sshPort)
@@ -143,7 +156,7 @@ Class Typo3ReverseDeployment
     }
 
     /**
-     * @param string $sshPortParam
+     * Build ssh port parameter
      */
     public function getSshPortParam()
     {
@@ -151,6 +164,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Set Passphrase for your Private Key
+     *
      * @param string $privateKeyPassphrase
      */
     public function setPrivateKeyPassphrase($privateKeyPassphrase) {
@@ -158,6 +173,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get root path of TYPO3 installation
+     *
      * @return string
      */
     public function getTypo3RootPath()
@@ -166,6 +183,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get path of TYPO3 installation
+     *
      * @param string $typo3RootPath
      */
     public function setTypo3RootPath($typo3RootPath)
@@ -174,6 +193,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Define Database Credentials to use on remote Server (read from LocalConfiguration.php)
+     *
      * @return string
      */
     public function getConnectionPool()
@@ -262,6 +283,10 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Set Target Filename/Folder
+     * - When path and filename given it will override existing file e.g. ./folder/dump.sql
+     * - When only path to folder given a filename based on date and dbname will be created e.g. 2018031336-dbname.sql
+     *
      * @param string $sqlTarget
      */
     public function setSqlTarget($sqlTarget)
@@ -278,6 +303,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Set array of tables to exclude in SQL dump
+     *
      * @param array $sqlExcludeTable
      */
     public function setSqlExcludeTable($sqlExcludeTable)
@@ -286,6 +313,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get custom php binary path
+     *
      * @return string
      */
     public function getPhpPathAndBinary() {
@@ -293,6 +322,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Set custom php binary path
+     *
      * @param string $phpPathAndBinary
      */
     public function setPhpPathAndBinary($phpPathAndBinary) {
@@ -303,18 +334,17 @@ Class Typo3ReverseDeployment
      * Connect to Server via SSH
      *
      * @param $host
-     * @param $user
-     * @return \phpseclib\Net\SSH2
+     * @return SSH2
      */
     public function ssh($host)
     {
-        $key = new \phpseclib\Crypt\RSA();
+        $key = new RSA();
         if($passphrase = $this->getPrivateKeyPassphrase()) {
             $key->setPassword($passphrase);
         }
 
         $key->loadKey(file_get_contents($this->getPrivateKey()));
-        $ssh = new \phpseclib\Net\SSH2($host, $this->getSshPort());
+        $ssh = new SSH2($host, $this->getSshPort());
 
         if (!$ssh->login($this->getUser(), $key)) {
             exit("\033[31mLogin Failed\033[0m" . PHP_EOL);
@@ -325,8 +355,10 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Load LocalConfiguration.php and return connection details as array
+     *
      * @param $ssh
-     * @return string
+     * @return mixed
      */
     public function getLocalConfiguration($ssh)
     {
@@ -340,6 +372,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Export and download database from remote TYPO3
+     *
      * @param $ssh
      * @return string
      */
@@ -371,6 +405,15 @@ Class Typo3ReverseDeployment
         return $sqlRemoteTarget;
     }
 
+    /**
+     * Get files from remote TYPO3
+     * - Download only used
+     * - Download all
+     * - Download additional folders like ./uploads
+     *
+     * @param $ssh
+     * @return bool
+     */
     public function getFiles($ssh)
     {
         $filesFrom = '';
@@ -393,6 +436,12 @@ Class Typo3ReverseDeployment
         return true;
     }
 
+    /**
+     * Get all files referenced/used in this TYPO3 instance
+     *
+     * @param $ssh
+     * @return string
+     */
     private function getUsedFiles($ssh) {
         $conf = $this->getLocalConfiguration($ssh);
         if ($conf['driver'] == 'mysqli') {
@@ -401,13 +450,13 @@ Class Typo3ReverseDeployment
 
             /**
              * Select only files with references (only used files)
-             * @query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
+             * query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
              */
             $files = $ssh->exec("mysql " . $conf['dbname'] . " -u " . $conf['user'] . " -p" . $conf['password'] . " -h" . $conf['host'] . " -se \"SELECT identifier FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid\"");
 
             /**
              * Create .rsync_files containing a list of files to download
-             * prefix with /fileadmin
+             * prefix with ./fileadmin
              */
             $i = 0;
             $files = explode("\n", $files);
