@@ -467,7 +467,7 @@ Class Typo3ReverseDeployment
          * Download files in list
          */
         echo "\033[32mDownload files to " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
-        exec($this->getPhpPathAndBinary() . ' -avz -L ' . $this->getSshPortParam() . $filesFrom . $include . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
+        exec($this->getRsyncPathAndBinary() . ' -avz -L ' . $this->getSshPortParam() . $filesFrom . $include . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
 
         return true;
     }
@@ -488,8 +488,23 @@ Class Typo3ReverseDeployment
              * Select only files with references (only used files)
              * query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
              */
-            // @TODO use PHP only
-            $files = $ssh->exec("mysql " . $conf['dbname'] . " -u " . $conf['user'] . " -p" . $conf['password'] . " -h" . $conf['host'] . " -se \"SELECT identifier FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid\"");
+            $files = $ssh->exec("php -r '
+                \$mysqli = new \mysqli(\"" . $conf['host'] . "\", \"" . $conf['user'] . "\", \"" . $conf['password'] . "\", \"" . $conf['dbname'] . "\");
+                if (\$mysqli->connect_errno) {
+                    printf(\"Connect failed on TYPO3 Remote: %s\n\", \$mysqli->connect_error);
+                    exit();
+                }
+                \$result = \$mysqli->query(\"SELECT identifier FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1 . uid = t2 . uid_local WHERE t1 . uid = t1 . uid\", MYSQLI_STORE_RESULT);
+
+                if(\$result){
+                    while (\$row = \$result->fetch_object()){
+                        \$files[] = \$row->identifier;
+                    }
+                }
+                echo implode(\"\n\",\$files) . \"\n\";
+
+                \$result->close();
+                '");
 
             /**
              * Create .rsync_files containing a list of files to download
@@ -503,7 +518,6 @@ Class Typo3ReverseDeployment
                 $i++;
             };
             file_put_contents($tempPhp, implode("\n", $files));
-
 
         } else {
             exit("\033[31mDatabase Driver " . $conf['driver'] . " not supported!\033[0m" . PHP_EOL);
