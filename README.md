@@ -10,7 +10,7 @@ Requires [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) on
 Security
 --------
 
-Created temporary filed should be protected from public access
+Created temporary files should be protected from public access
 
 **Apache**
 
