@@ -485,6 +485,8 @@ Class Typo3ReverseDeployment
 
     /**
      * Ensure all required files and folders exist on remote
+     * - Folder for temporary files typo3temp/joro_typo3reversedeployment/
+     * - For Security .htaccess
      *
      * @param $ssh
      */
@@ -494,7 +496,5 @@ Class Typo3ReverseDeployment
         $htaccess = $tempFolder . '.htaccess';
         $ssh->exec($this->getPhpPathAndBinary() . " -r 'mkdir(\"$tempFolder\", 0777, true);'");
         $ssh->exec($this->getPhpPathAndBinary() . " -r 'file_put_contents(\"$htaccess\",\"deny from all\");'");
-
     }
-
 }

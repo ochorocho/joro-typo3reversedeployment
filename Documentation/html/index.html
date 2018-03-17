@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TYPO3 Reverse Deployment: Reverse deploy TYPO3 DB and fileadmin</title>
+<title>TYPO3 Reverse Deployment: Reverse deploy TYPO3 DB and Folders</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,7 +62,7 @@ $(function() {
 
 <div class="header">
   <div class="headertitle">
-<div class="title">Reverse deploy TYPO3 DB and fileadmin </div>  </div>
+<div class="title">Reverse deploy TYPO3 DB and Folders </div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Features:</p><ul>
@@ -70,7 +70,14 @@ $(function() {
 <li>Download only referenced files to your local fileadmin</li>
 </ul>
 <p>Requires <a href="https://packagist.org/packages/helhum/typo3-console">TYPO3 Console</a> on remote TYPO3 installation</p>
-<p>Usage:</p>
+<h2>Security </h2>
+<p>Created temporary filed should be protected from public access</p>
+<p><b>Apache</b></p>
+<p>The code will check for <code>.htaccess</code> file within <code>typo3temp/joro_typo3reversedeployment</code> and creates it as needed.</p>
+<p>Example content:</p>
+<div class="fragment"><div class="line">deny from all</div></div><!-- fragment --><p><b>NGINX</b></p>
+<p>Add this to your NGINX configuration to disabled public access of temp files</p>
+<div class="fragment"><div class="line">location ~ /\.(?!joro_typo3reversedeployment).* {</div><div class="line">    deny all;</div><div class="line">}</div></div><!-- fragment --><h2>Usage: </h2>
 <p>1) Create a new file in folder <code>.reverse</code>, e.g. <code>.reverse/remote.php</code></p>
 <div class="fragment"><div class="line">&lt;?php</div><div class="line"></div><div class="line">$reverseDeploy = <a class="code" href="namespace_jo_ro.html#aceb12afcb87acdfe2193c0d80a13211a">new \JoRo\Typo3ReverseDeployment</a>();</div><div class="line"></div><div class="line">$reverseDeploy-&gt;setTypo3RootPath(<span class="stringliteral">&#39;/var/www/html/&#39;</span>);</div><div class="line"><span class="comment">// optional: $reverseDeploy-&gt;setPhpPathAndBinary(&#39;/usr/local/bin/php_cli&#39;);</span></div><div class="line"></div><div class="line">$reverseDeploy-&gt;setPrivateKey(getenv(<span class="stringliteral">&quot;HOME&quot;</span>) . <span class="stringliteral">&#39;/.ssh/id_rsa&#39;</span>);</div><div class="line">$reverseDeploy-&gt;setUser(<span class="stringliteral">&#39;USERNAME&#39;</span>);</div><div class="line">$ssh = $reverseDeploy-&gt;ssh(<span class="stringliteral">&#39;example.org&#39;</span>);</div><div class="line"></div><div class="line">$reverseDeploy-&gt;setSqlExcludeTable([<span class="stringliteral">&#39;sys_log&#39;</span>]);</div><div class="line">$reverseDeploy-&gt;setSqlTarget(<span class="stringliteral">&quot;./tmp/&quot;</span>);</div><div class="line">$reverseDeploy-&gt;getDatabase($ssh);</div><div class="line"></div><div class="line">$reverseDeploy-&gt;setFileTarget(<span class="stringliteral">&quot;./fileadmin/&quot;</span>);</div><div class="line">$reverseDeploy-&gt;getFiles($ssh);</div></div><!-- fragment --><p>2) Run <code>vendor/bin/typo3reverse</code></p>
 <h2>Use SSH-Key with passphrase </h2>
