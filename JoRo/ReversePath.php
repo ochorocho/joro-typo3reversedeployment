@@ -3,6 +3,7 @@
 namespace JoRo;
 
 use \TYPO3\Flow\Utility\Files;
+use \JoRo\Typo3ReverseDeployment;
 
 Class ReversePath
 {

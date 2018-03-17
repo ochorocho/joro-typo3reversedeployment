@@ -2,6 +2,9 @@
 
 namespace JoRo;
 
+use phpseclib\Crypt\RSA;
+use phpseclib\Net\SSH2;
+
 Class Typo3ReverseDeployment
 {
 
@@ -295,6 +298,8 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get array of excluded database tables
+     *
      * @return array
      */
     public function getSqlExcludeTable()
@@ -351,6 +356,9 @@ Class Typo3ReverseDeployment
         } else {
             echo "\033[32mSSH to " . $this->getUser() . "@$host successful\033[0m" . PHP_EOL;
         }
+
+        $this->ensureRemoteDirectoryExists($ssh);
+
         return $ssh;
     }
 
@@ -384,6 +392,7 @@ Class Typo3ReverseDeployment
 
         /**
          * Build --exclude-tables for `typo3cms database:export` command
+         * @return string $ignoredTables
          */
         $ignoredTables = count($this->sqlExcludeTable) > 0 ? " --exclude-tables " : "";
         foreach ($this->sqlExcludeTable as $exclude) {
@@ -393,14 +402,14 @@ Class Typo3ReverseDeployment
         /**
          * Export and download database
          */
-        $sqlRemoteTarget = $this->getTypo3RootPath() . 'typo3temp/' . date("Ymds") . "-" . $conf['dbname'] . ".sql";
+        $sqlRemoteTarget = $this->getTypo3RootPath() . 'typo3temp/joro_typo3reversedeployment/' . date("Ymds") . "-" . $conf['dbname'] . ".sql";
         $sqlExport = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary() . " ../vendor/bin/typo3cms database:export";
 
         echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
         $ssh->exec($sqlExport . " $ignoredTables > $sqlRemoteTarget");
 
         exec("rsync -avz " . $this->getSshPortParam() . ' ' . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
-        $ssh->exec("rm -f $sqlRemoteTarget");
+        $ssh->exec($this->getPhpPathAndBinary() . " -r 'unlink(\"$sqlRemoteTarget\");'");
 
         return $sqlRemoteTarget;
     }
@@ -473,4 +482,19 @@ Class Typo3ReverseDeployment
         }
         return $tempPhp;
     }
+
+    /**
+     * Ensure all required files and folders exist on remote
+     *
+     * @param $ssh
+     */
+    protected function ensureRemoteDirectoryExists($ssh)
+    {
+        $tempFolder = $this->getTypo3RootPath() . "typo3temp/joro_typo3reversedeployment/";
+        $htaccess = $tempFolder . '.htaccess';
+        $ssh->exec($this->getPhpPathAndBinary() . " -r 'mkdir(\"$tempFolder\", 0777, true);'");
+        $ssh->exec($this->getPhpPathAndBinary() . " -r 'file_put_contents(\"$htaccess\",\"deny from all\");'");
+
+    }
+
 }

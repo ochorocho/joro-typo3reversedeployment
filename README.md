@@ -1,4 +1,4 @@
-Reverse deploy TYPO3 DB and fileadmin
+Reverse deploy TYPO3 DB and Folders
 =====================================
 
 Features:
@@ -7,7 +7,33 @@ Features:
 
 Requires [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) on remote TYPO3 installation
 
+Security
+--------
+
+Created temporary filed should be protected from public access
+
+**Apache**
+
+The code will check for `.htaccess` file within `typo3temp/joro_typo3reversedeployment` and creates it as needed.
+
+Example content:
+
+```
+ deny from all
+``` 
+
+**NGINX**
+
+Add this to your NGINX configuration to disabled public access of temp files
+
+```
+location ~ /\.(?!joro_typo3reversedeployment).* {
+    deny all;
+}
+```
+
 Usage:
+------
 
 1) Create a new file in folder `.reverse`, e.g. `.reverse/remote.php`
 
