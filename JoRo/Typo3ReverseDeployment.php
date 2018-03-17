@@ -452,24 +452,23 @@ Class Typo3ReverseDeployment
      */
     public function getFiles($ssh)
     {
-        $filesFrom = '';
-        if($this->getFileadminOnlyUsed()) {
-            $tempPhp = $this->getUsedFiles($ssh);
-            $filesFrom = ' --files-from=' . $tempPhp . ' ';
-        }
-
+        $tempPhp = $this->getCreateTempFileForDownload($ssh);
+        $filesFrom = ' --files-from=' . $tempPhp . ' ';
         $exlude = " --exclude={" . implode(",", $this->getExclude()) . "} ";
-        $include = " --include={" . implode(",", $this->getInclude()) . "} ";
-
         $fileadminRemote = $this->getTypo3RootPath();
 
         /**
          * Download files in list
          */
         echo "\033[32mDownload files to " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
-        exec($this->getRsyncPathAndBinary() . ' -avz -L ' . $this->getSshPortParam() . $filesFrom . $include . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
+        exec($this->getRsyncPathAndBinary() . ' -h --progress -avz -r -L ' . $this->getSshPortParam() . $filesFrom . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget(),$output, $return);
 
-        return true;
+        $output = array_reverse($output);
+
+        echo $output[1] . PHP_EOL;
+        echo $output[0] . PHP_EOL;
+
+        return $return;
     }
 
     /**
@@ -478,17 +477,23 @@ Class Typo3ReverseDeployment
      * @param $ssh
      * @return string
      */
-    private function getUsedFiles($ssh) {
+    private function getCreateTempFileForDownload($ssh) {
         $conf = $this->getLocalConfiguration($ssh);
-        if ($conf['driver'] == 'mysqli') {
+        $i = 0;
 
-            $tempPhp = sys_get_temp_dir() . '.rsync_files';
+        $tempPhp = sys_get_temp_dir() . '.rsync_files';
+        $files = [];
+        if ($conf['driver'] == 'mysqli' && $this->getFileadminOnlyUsed()) {
+
+            if(!$conf['driver'] == 'mysqli') {
+                exit("\033[31mDatabase Driver " . $conf['driver'] . " not supported!\033[0m" . PHP_EOL);
+            }
 
             /**
              * Select only files with references (only used files)
              * query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
              */
-            $files = $ssh->exec("php -r '
+            $filesUsed = $ssh->exec("php -r '
                 \$mysqli = new \mysqli(\"" . $conf['host'] . "\", \"" . $conf['user'] . "\", \"" . $conf['password'] . "\", \"" . $conf['dbname'] . "\");
                 if (\$mysqli->connect_errno) {
                     printf(\"Connect failed on TYPO3 Remote: %s\n\", \$mysqli->connect_error);
@@ -510,18 +515,20 @@ Class Typo3ReverseDeployment
              * Create .rsync_files containing a list of files to download
              * prefix with ./fileadmin
              */
-            $i = 0;
-            $files = explode("\n", $files);
+            $files = explode("\n", $filesUsed);
             $files = array_filter($files);
             foreach($files as $file) {
                 $files[$i] =  '/fileadmin' . $file;
                 $i++;
             };
-            file_put_contents($tempPhp, implode("\n", $files));
-
-        } else {
-            exit("\033[31mDatabase Driver " . $conf['driver'] . " not supported!\033[0m" . PHP_EOL);
         }
+        foreach ($this->getInclude() as $include) {
+            $files[$i] = $include;
+            $i++;
+        }
+
+        file_put_contents($tempPhp, implode("\n", $files));
+
         return $tempPhp;
     }
 

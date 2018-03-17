@@ -8,6 +8,7 @@ var searchData=
   ['_24phppathandbinary',['$phpPathAndBinary',['../namespace_jo_ro.html#a3fbd8f1beee3858bad26cdbfb995e77c',1,'JoRo']]],
   ['_24privatekey',['$privateKey',['../namespace_jo_ro.html#ad51be8214415c7450cf15802e7a5db7f',1,'JoRo']]],
   ['_24privatekeypassphrase',['$privateKeyPassphrase',['../namespace_jo_ro.html#af50dbffb23d6dff1e7f3c1c7c50db929',1,'JoRo']]],
+  ['_24rsyncpathandbinary',['$rsyncPathAndBinary',['../namespace_jo_ro.html#a1b84f2b43595cb8b1ce6c5641fd46820',1,'JoRo']]],
   ['_24sqlexcludetable',['$sqlExcludeTable',['../namespace_jo_ro.html#a34b0c22e16322c43c103e665bc7c182c',1,'JoRo']]],
   ['_24sqltarget',['$sqlTarget',['../namespace_jo_ro.html#aac42199022f1cecb758140a5060de23e',1,'JoRo']]],
   ['_24sshport',['$sshPort',['../namespace_jo_ro.html#ac418eddba99b92f21ac5e988f7e88f1c',1,'JoRo']]],

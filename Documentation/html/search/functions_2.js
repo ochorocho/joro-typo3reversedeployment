@@ -8,6 +8,7 @@ var searchData=
   ['setphppathandbinary',['setPhpPathAndBinary',['../namespace_jo_ro.html#a023906ef4af0ca9aeba6d68f5b69aaa1',1,'JoRo']]],
   ['setprivatekey',['setPrivateKey',['../namespace_jo_ro.html#ac66a147ee256943443e7b247aaed1349',1,'JoRo']]],
   ['setprivatekeypassphrase',['setPrivateKeyPassphrase',['../namespace_jo_ro.html#a36de6729a083c6b385c4931d46336774',1,'JoRo']]],
+  ['setrsyncpathandbinary',['setRsyncPathAndBinary',['../namespace_jo_ro.html#a1c3796418a3236b29d580841f6e18edf',1,'JoRo']]],
   ['setsqlexcludetable',['setSqlExcludeTable',['../namespace_jo_ro.html#a8f72b560f9757df595abbdd27763b481',1,'JoRo']]],
   ['setsqltarget',['setSqlTarget',['../namespace_jo_ro.html#a16993c043d1853785ac2a42c254ace49',1,'JoRo']]],
   ['setsshport',['setSshPort',['../namespace_jo_ro.html#adb6e1cc4e14c9f609a87eec6f7bad03e',1,'JoRo']]],

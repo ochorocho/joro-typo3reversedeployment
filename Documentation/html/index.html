@@ -68,10 +68,11 @@ $(function() {
 <div class="textblock"><p>Features:</p><ul>
 <li>Export TYPO3 Database and download (exclude tables)</li>
 <li>Download only referenced files to your local fileadmin</li>
+<li>Download specific folders like ./uploads or download entire fileadmin</li>
 </ul>
 <p>Requires <a href="https://packagist.org/packages/helhum/typo3-console">TYPO3 Console</a> on remote TYPO3 installation</p>
 <h2>Security </h2>
-<p>Created temporary filed should be protected from public access</p>
+<p>Created temporary files should be protected from public access</p>
 <p><b>Apache</b></p>
 <p>The code will check for <code>.htaccess</code> file within <code>typo3temp/joro_typo3reversedeployment</code> and creates it as needed.</p>
 <p>Example content:</p>
