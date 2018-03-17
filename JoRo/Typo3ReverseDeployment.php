@@ -88,6 +88,13 @@ Class Typo3ReverseDeployment
     protected $phpPathAndBinary = "php";
 
     /**
+     * Full path to rsync binary
+     *
+     * @var string $rsyncPathAndBinary
+     */
+    protected $rsyncPathAndBinary = "rsync";
+
+    /**
      * @return string
      */
     public function getUser()
@@ -336,6 +343,26 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Get rsync binary path
+     *
+     * @return string
+     */
+    public function getRsyncPathAndBinary()
+    {
+        return $this->rsyncPathAndBinary;
+    }
+
+    /**
+     * Set custom rsync binary path
+     *
+     * @param string $rsyncPathAndBinary
+     */
+    public function setRsyncPathAndBinary($rsyncPathAndBinary)
+    {
+        $this->rsyncPathAndBinary = $rsyncPathAndBinary;
+    }
+
+    /**
      * Connect to Server via SSH
      *
      * @param $host
@@ -370,9 +397,9 @@ Class Typo3ReverseDeployment
      */
     public function getLocalConfiguration($ssh)
     {
-
         $path = $this->getTypo3RootPath();
-        $remoteConf = $ssh->exec('cat ' . $path . '/typo3conf/LocalConfiguration.php');
+        $remoteConf = $ssh->exec($this->getPhpPathAndBinary() . " -r 'echo file_get_contents(\"$path/typo3conf/LocalConfiguration.php\");'");
+
         $phpConfig = str_replace('<?php', '', $remoteConf);
         $conf = eval($phpConfig);
 
@@ -408,7 +435,7 @@ Class Typo3ReverseDeployment
         echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
         $ssh->exec($sqlExport . " $ignoredTables > $sqlRemoteTarget");
 
-        exec("rsync -avz " . $this->getSshPortParam() . ' ' . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
+        exec($this->getRsyncPathAndBinary() . " -avz " . $this->getSshPortParam() . ' ' . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
         $ssh->exec($this->getPhpPathAndBinary() . " -r 'unlink(\"$sqlRemoteTarget\");'");
 
         return $sqlRemoteTarget;
@@ -440,7 +467,7 @@ Class Typo3ReverseDeployment
          * Download files in list
          */
         echo "\033[32mDownload files to " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
-        exec('rsync -avz -L ' . $this->getSshPortParam() . $filesFrom . $include . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
+        exec($this->getPhpPathAndBinary() . ' -avz -L ' . $this->getSshPortParam() . $filesFrom . $include . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget());
 
         return true;
     }
@@ -461,6 +488,7 @@ Class Typo3ReverseDeployment
              * Select only files with references (only used files)
              * query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
              */
+            // @TODO use PHP only
             $files = $ssh->exec("mysql " . $conf['dbname'] . " -u " . $conf['user'] . " -p" . $conf['password'] . " -h" . $conf['host'] . " -se \"SELECT identifier FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid\"");
 
             /**
