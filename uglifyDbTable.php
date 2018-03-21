@@ -1,7 +1,7 @@
 <?php
 
-//namespace PHPSQLParser;
-//require_once dirname(__FILE__) . '/vendor/autoload.php';
+$sqlFile = file_get_contents(dirname(__FILE__) . '/sql/2018031701-c1typo3.sql');
+
 
 /**
  * Define tables to obfuscate
