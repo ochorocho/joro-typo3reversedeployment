@@ -4,9 +4,13 @@ $sqlFile = file_get_contents(dirname(__FILE__) . '/sql/2018031701-c1typo3.sql');
 
 
 /**
- * Define tables to obfuscate
+ * Define table fields to obfuscate
  */
-$tablesToFind = ['be_users' => ['username','password'],'backend_layout' => ['description','name']];
+$tablesToFind = [
+    'be_users' => ['username','password'],
+    'tt_content' => ['title','bodytext'],
+    //'backend_layout' => ['description','name']
+];
 
 $tableFieldArray = [];
 
@@ -33,13 +37,44 @@ foreach ($tablesToFind as $table => $fieldsToReplace) {
 
 }
 
-print_r($tableFieldArray);
+//  print_r($tableFieldArray);
 
+foreach ($tableFieldArray as $table => $fieldInsert) {
+    /**
+     * Match all $table
+     */
+    preg_match_all("/INSERT\sINTO\s\`$table\`\sVALUES\s\((.*?)\);/ms", $sqlFile, $tableInsert);
+    foreach ($tableInsert[1] as $key => $insert) {
+        $singleInsert = explode('),', $insert);
+        foreach ($singleInsert as $key => $single) {
+            $singleField = explode(',', preg_replace("/^\((.*?)/ms", '', $single));
+            /**
+             * Modify fields
+             */
+            foreach ($tableFieldArray[$table] as $key => $field) {
+                //$singleField[$key] = "'XXXXXXX'";
+            }
+            /**
+             * Put back together single fields
+             */
+            $singleFieldBack[] = implode(',', $singleField);
+        }
+        /**
+         * Put back together single inserts
+         */
+        $singleInsertBack = implode('),(', $singleFieldBack);
 
+        /**
+         * Complete INSERT statement
+         */
+        echo "INSERT INTO `" . $table . "` VALUES (" . $singleInsertBack . ");" . PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
+
+    }
+}
 
 // print_r($fields);
 
-// WOrking queries
+// Working queries
 
 /**
  * Get CREATE TABLE
