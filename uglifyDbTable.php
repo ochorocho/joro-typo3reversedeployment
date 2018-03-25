@@ -1,6 +1,6 @@
 <?php
 
-$sqlFile = file_get_contents(dirname(__FILE__) . '/sql/2018031701-c1typo3.sql');
+$sqlFile = file_get_contents(dirname(__FILE__) . '/sql/2018031703-c1typo3.sql');
 
 
 /**
@@ -37,22 +37,27 @@ foreach ($tablesToFind as $table => $fieldsToReplace) {
 
 }
 
-//  print_r($tableFieldArray);
+$replace = [];
+$pattern = [];
 
 foreach ($tableFieldArray as $table => $fieldInsert) {
     /**
      * Match all $table
      */
     preg_match_all("/INSERT\sINTO\s\`$table\`\sVALUES\s\((.*?)\);/ms", $sqlFile, $tableInsert);
+
     foreach ($tableInsert[1] as $key => $insert) {
-        $singleInsert = explode('),', $insert);
+
+        $singleInsert = explode('),(', $insert);
         foreach ($singleInsert as $key => $single) {
+
             $singleField = explode(',', preg_replace("/^\((.*?)/ms", '', $single));
             /**
              * Modify fields
              */
+            $singleFieldBack = [];
             foreach ($tableFieldArray[$table] as $key => $field) {
-                //$singleField[$key] = "'XXXXXXX'";
+                $singleField[$key] = "'XXXXXXX'";
             }
             /**
              * Put back together single fields
@@ -60,33 +65,19 @@ foreach ($tableFieldArray as $table => $fieldInsert) {
             $singleFieldBack[] = implode(',', $singleField);
         }
         /**
-         * Put back together single inserts
-         */
-        $singleInsertBack = implode('),(', $singleFieldBack);
-
-        /**
          * Complete INSERT statement
          */
-        echo "INSERT INTO `" . $table . "` VALUES (" . $singleInsertBack . ");" . PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
+        $newInsert = "INSERT INTO `" . $table . "` VALUES (" . implode('),(',$singleFieldBack) . ");" . PHP_EOL;
+        $originInsert = "INSERT INTO `" . $table . "` VALUES (" . $insert . ");" . PHP_EOL;
 
+        $pattern[] = '/' . preg_quote($originInsert, '/') . '/';
+        $replace[] = $newInsert;
     }
 }
 
-// print_r($fields);
-
-// Working queries
-
-/**
- * Get CREATE TABLE
- */
-// preg_match_all("/CREATE\s+TABLE\s+\`?(\w+)/i", $input_lines, $output_array);
-
-
-//
-//$sql = 'SELECT 1';
-//echo $sql . "\n";
-//$start = microtime(true);
-//$parser = new PHPSQLParser($sql, true);
-//$stop = microtime(true);
-//print_r($parser->parsed);
-//echo "parse time simplest query:" . ($stop - $start) . "\n";
+$resultSql = preg_replace(
+    $pattern,
+    $replace,
+    $sqlFile
+);
+file_put_contents("hooray.sql", $resultSql);
