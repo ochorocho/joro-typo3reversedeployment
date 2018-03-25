@@ -2,14 +2,25 @@
 
 $sqlFile = file_get_contents(dirname(__FILE__) . '/sql/2018031703-c1typo3.sql');
 
-
 /**
  * Define table fields to obfuscate
  */
 $tablesToFind = [
-    'be_users' => ['username','password'],
+    'be_users' => ['username','password','pid','category_perms'],
     'tt_content' => ['title','bodytext'],
-    //'backend_layout' => ['description','name']
+];
+
+$tablesFieldReplace = [
+    'be_users' => [
+        'pid' => -666,
+        'category_perms' => null,
+        'username' => "NiceUsername",
+        'password' => "ReplacePasswordField"
+    ],
+    'tt_content' => [
+        'title' => "tt_content title",
+        'bodytext' => "tt_content bodytext tt_content bodytext tt_content bodytext tt_content bodytext tt_content bodytext"
+    ],
 ];
 
 $tableFieldArray = [];
@@ -57,7 +68,13 @@ foreach ($tableFieldArray as $table => $fieldInsert) {
              */
             $singleFieldBack = [];
             foreach ($tableFieldArray[$table] as $key => $field) {
-                $singleField[$key] = "'XXXXXXX'";
+
+                if(is_numeric($singleField[$key]) || is_null($singleField[$key])) {
+                    $replaceValue = $tablesFieldReplace[$table][$field];
+                } else {
+                    $replaceValue = "'" . $tablesFieldReplace[$table][$field] . "'";
+                }
+                $singleField[$key] = $replaceValue;
             }
             /**
              * Put back together single fields
