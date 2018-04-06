@@ -170,7 +170,7 @@ Class Typo3ReverseDeployment
      */
     public function getSshPortParam()
     {
-        return '-e "ssh -p ' . $this->sshPort . '"';
+        return '-e "ssh -p ' . $this->getSshPort() . '"';
     }
 
     /**
