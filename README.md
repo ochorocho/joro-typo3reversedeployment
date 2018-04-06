@@ -54,6 +54,7 @@ $reverseDeploy->setTypo3RootPath('/var/www/html/');
  */
 $reverseDeploy->setPrivateKey(getenv("HOME") . '/.ssh/id_rsa');
 $reverseDeploy->setUser('USERNAME');
+// optional: $reverseDeploy->setSshPort(222);
 $ssh = $reverseDeploy->ssh('example.org');
 
 /**
