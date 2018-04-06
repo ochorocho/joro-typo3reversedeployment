@@ -166,11 +166,11 @@ Class Typo3ReverseDeployment
     }
 
     /**
-     * Build ssh port parameter
+     * Build and return ssh port parameter
      */
     public function getSshPortParam()
     {
-        $this->sshPortParam = '-e "ssh -p ' . $this->sshPort . '"';
+        return '-e "ssh -p ' . $this->sshPort . '"';
     }
 
     /**
