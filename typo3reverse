@@ -14,7 +14,7 @@ use TYPO3\Flow\Utility\Files;
 
 $factory = new \JoRo\ReversePath();
 
-if(in_array($argv[1],$factory->getDeploymentNames())) {
+if(isset($argv[1]) && in_array($argv[1],$factory->getDeploymentNames())) {
     $deploymentName = $argv[1];
 } else {
     $deploymentName = $factory->getDeploymentNames()[0];
