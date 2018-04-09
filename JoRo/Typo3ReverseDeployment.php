@@ -429,7 +429,7 @@ Class Typo3ReverseDeployment
         /**
          * Export and download database
          */
-        $sqlRemoteTarget = $this->getTypo3RootPath() . 'typo3temp/joro_typo3reversedeployment/' . date("Ymds") . "-" . $conf['dbname'] . ".sql";
+        $sqlRemoteTarget = $this->getTypo3RootPath() . 'typo3temp/joro_typo3reversedeployment/' . date("YmdHis") . "-" . $conf['dbname'] . ".sql";
         $sqlExport = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary() . " ../vendor/bin/typo3cms database:export";
 
         echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
