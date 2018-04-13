@@ -403,7 +403,17 @@ Class Typo3ReverseDeployment
         $phpConfig = str_replace('<?php', '', $remoteConf);
         $conf = eval($phpConfig);
 
-        return $conf['DB']['Connections'][$this->getConnectionPool()];
+        if(isset($conf['DB']['Connections'])) { // current TYPO3 versions
+            return $conf['DB']['Connections'][$this->getConnectionPool()];
+        } else { // simple fallback for TYPO3 7
+            return [
+                'driver' => 'mysqli',
+                'host' => $conf['DB']['host'],
+                'user' => $conf['DB']['username'],
+                'password' => $conf['DB']['password'],
+                'dbname' => $conf['DB']['database']
+            ];
+        }
     }
 
     /**
