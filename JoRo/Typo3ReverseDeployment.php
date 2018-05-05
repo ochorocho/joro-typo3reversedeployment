@@ -93,6 +93,13 @@ Class Typo3ReverseDeployment
      * @var string $rsyncPathAndBinary
      */
     protected $rsyncPathAndBinary = "rsync";
+    
+    /**
+     * Relative path to typo3_console executable
+     *
+     * @var string $pathToConsoleExecutable
+     */
+    protected $pathToConsoleExecutable = "../vendor/bin/typo3cms";
 
     /**
      * @return string
@@ -361,6 +368,26 @@ Class Typo3ReverseDeployment
     {
         $this->rsyncPathAndBinary = $rsyncPathAndBinary;
     }
+    
+    /**
+     * Get path to typo3_console executable
+     *
+     * @return string
+     */
+    public function getPathToConsoleExecutable()
+    {
+        return $this->pathToConsoleExecutable;
+    }
+    
+    /**
+     * Set path to typo3_console executable
+     *
+     * @param string $pathToConsoleExecutable
+     */
+    public function setPathToConsoleExecutable($pathToConsoleExecutable)
+    {
+        $this->pathToConsoleExecutable = $pathToConsoleExecutable
+    }
 
     /**
      * Connect to Server via SSH
@@ -440,7 +467,7 @@ Class Typo3ReverseDeployment
          * Export and download database
          */
         $sqlRemoteTarget = $this->getTypo3RootPath() . 'typo3temp/joro_typo3reversedeployment/' . date("YmdHis") . "-" . $conf['dbname'] . ".sql";
-        $sqlExport = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary() . " ../vendor/bin/typo3cms database:export";
+        $sqlExport = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary() . " " . $this->getPathToConsoleExecutable() . " database:export";
 
         echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
         $ssh->exec($sqlExport . " $ignoredTables > $sqlRemoteTarget");
