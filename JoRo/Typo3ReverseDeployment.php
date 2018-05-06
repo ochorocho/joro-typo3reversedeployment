@@ -386,7 +386,7 @@ Class Typo3ReverseDeployment
      */
     public function setPathToConsoleExecutable($pathToConsoleExecutable)
     {
-        $this->pathToConsoleExecutable = $pathToConsoleExecutable
+        $this->pathToConsoleExecutable = $pathToConsoleExecutable;
     }
 
     /**
