@@ -572,7 +572,7 @@ Class Typo3ReverseDeployment
              * Select only files with references (only used files)
              * query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
              */
-            $filesUsed = $ssh->exec("php -r '
+            $filesUsed = $ssh->exec($this->getPhpPathAndBinary() . " -r '
                 \$mysqli = new \mysqli(\"" . $conf['host'] . "\", \"" . $conf['user'] . "\", \"" . $conf['password'] . "\", \"" . $conf['dbname'] . "\");
                 if (\$mysqli->connect_errno) {
                     printf(\"Connect failed on TYPO3 Remote: %s\n\", \$mysqli->connect_error);
