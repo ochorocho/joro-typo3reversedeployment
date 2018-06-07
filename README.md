@@ -73,6 +73,21 @@ $reverseDeploy->getFiles($ssh);
 
 2) Run `vendor/bin/typo3reverse`
 
+Add/remove methods for files include/exclude
+--------------------------------------------
+
+Add/remove item to/from exludes array
+```php
+$reverseDeploy->addExclude(["uploads"]);
+$reverseDeploy->removeExclude(["uploads"]);
+```
+
+Add/remove item to/from includes array
+```php
+$reverseDeploy->addInclude(["uploads"]);
+$reverseDeploy->removeInclude(["uploads"]);
+```
+
 Use SSH-Key with passphrase
 ---------------------------
 
