@@ -276,6 +276,27 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Add item to $exclude
+     * Use after 'setExclude' otherwise it will be overwritten
+     *
+     * @param array $exclude
+     */
+    public function addExclude($exclude)
+    {
+        $this->exclude = array_merge($this->getExclude(), $exclude);
+    }
+
+    /**
+     * Remove item from $exclude
+     *
+     * @param array $exclude
+     */
+    public function removeExclude($exclude)
+    {
+        $this->exclude = array_diff($this->getExclude(), $exclude);
+    }
+
+    /**
      * @return array
      */
     public function getInclude()
@@ -289,6 +310,27 @@ Class Typo3ReverseDeployment
     public function setInclude($include)
     {
         $this->include = $include;
+    }
+
+    /**
+     * Add item to $include
+     * Use after 'setInclude' otherwise it will be overwritten
+     *
+     * @param array $include
+     */
+    public function addInclude($include)
+    {
+        $this->include = array_merge($this->getInclude(), $include);
+    }
+
+    /**
+     * Remove item from $include
+     *
+     * @param array $include
+     */
+    public function removeInclude($include)
+    {
+        $this->include = array_diff($this->getInclude(), $include);
     }
 
     /**
@@ -559,6 +601,7 @@ Class Typo3ReverseDeployment
                 $i++;
             };
         }
+
         foreach ($this->getInclude() as $include) {
             $files[$i] = $include;
             $i++;
