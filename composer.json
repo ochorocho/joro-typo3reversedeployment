@@ -3,6 +3,7 @@
     "description": "Export DB and files to your TYPO3 dev installation",
     "license": "GPL-3.0-or-later",
     "require": {
+        "helhum/typo3-console": "^4.6.0 || ^5.2",
         "phpseclib/phpseclib": "^2.0",
         "neos/utility-files": "^3.0"
     },
