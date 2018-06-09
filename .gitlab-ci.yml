@@ -4,23 +4,22 @@ stages:
 
 phpqa:
   stage: codequality
-  image: zdenekdrahos/phpqa:latest
+  image: zdenekdrahos/phpqa:v1.18.0
   variables:
     BACKEND_QA: "*/backend/var/QA"
-    BACKEND_CACHE: $CI_PROJECT_DIR/.composer
+    BACKEND_CACHE: $CI_PROJECT_DIR/.composercache
   cache:
     paths:
     - $BACKEND_CACHE
   script:
-    - export COMPOSER_CACHE_DIR=$BACKEND_CACHE
-    - mkdir phpqa
-    - phpqa --report --tools phpmd:100,phpcpd:100,phploc,pdepend --buildDir ./phpqa
-     - mv phpqa/ public/
-  allow_failure: true
+    - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
+    - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
+    - 'phpqa --report --tools phpcs:0,phpunit:0 --buildDir var/QA --analyzedDirs ./ --ignoredDirs var,vendor'
   artifacts:
-    paths: 
-    - public
-
+    when: always
+    paths:
+    - $BACKEND_QA
+    
 pages:
   stage: publish
   image: alpine
