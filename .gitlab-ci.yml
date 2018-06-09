@@ -11,11 +11,10 @@ codequality:
   services:
     - docker:stable-dind
   script:
-    #- export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
     - mkdir ./codeclimate
-    - docker run --env SOURCE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock "hub.knallimall.org/docker/codequality:latest" /code
-    #- docker run --env SOURCE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" analyze -f html /code analyze -f html > codeclimate/codeclimate.html
-    - mv codeclimate/ public/
+    - docker run --env SOURCE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" analyze -f html /code analyze -f html > codeclimate/codeclimate.html
+    - mv ./codeclimate/ public/
   artifacts:
     paths: 
     - public
