@@ -4,7 +4,7 @@ stages:
 
 phpqa:
   stage: codequality
-  image: zdenekdrahos/phpqa:v1.18.0
+  image: zdenekdrahos/phpqa:latest
   variables:
     BACKEND_QA: "*/backend/var/QA"
     BACKEND_CACHE: $CI_PROJECT_DIR/.composer
