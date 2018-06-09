@@ -16,10 +16,11 @@ phpqa:
     - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
     - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
     - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir var/QA --analyzedDirs ./ --ignoredDirs var,vendor'
+    - mv phpqa public/
   artifacts:
     when: always
     paths:
-    - $BACKEND_QA
+    - public
     
 pages:
   stage: publish
