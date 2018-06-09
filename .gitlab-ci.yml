@@ -34,7 +34,7 @@ pages:
     - mkdir .public
     - mv build/phpqa/ .public/
     - mv Documentation/doxygen/ .public/
-    - 'ls -la public/'
+    - 'ls -la .public/'
     - mv .public public
     - 'ls -la public/'
   artifacts:
