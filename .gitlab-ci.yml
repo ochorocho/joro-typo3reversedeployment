@@ -33,6 +33,7 @@ pages:
     - doxygen .doxygen
     - mv build/phpqa/ public/
     - mv Documentation/doxygen/ public/
+    - 'ls -la'
   artifacts:
     paths:
     - public
