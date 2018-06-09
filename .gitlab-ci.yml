@@ -5,6 +5,7 @@ stages:
 phpqa:
   stage: codequality
   image: zdenekdrahos/phpqa:v1.18.0
+  allow_failure: true
   variables:
     BACKEND_QA: "*/backend/var/QA"
     BACKEND_CACHE: $CI_PROJECT_DIR/.composercache
@@ -14,7 +15,7 @@ phpqa:
   script:
     - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
     - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
-    - 'phpqa --report --tools phpcs:0,phpunit:0 --buildDir var/QA --analyzedDirs ./ --ignoredDirs var,vendor'
+    - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir var/QA --analyzedDirs ./ --ignoredDirs var,vendor'
   artifacts:
     when: always
     paths:
