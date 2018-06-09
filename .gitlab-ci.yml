@@ -15,12 +15,12 @@ phpqa:
   script:
     - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
     - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
-    - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir build/phpqa/ --analyzedDirs ./ --ignoredDirs var,vendor'
-#    - mv build/phpqa/ public/
+    - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir phpqa/ --analyzedDirs ./ --ignoredDirs var,vendor'
+    - 'ls -la'
   artifacts:
     when: always
     paths:
-    - phpqa
+    - phpqa/
     
 pages:
   stage: publish
@@ -28,11 +28,11 @@ pages:
   dependencies: 
     - phpqa
   script:
-  - ls -la
-  - apk update && apk add doxygen
-  - doxygen .doxygen
-  - mv phpqa/ public/
-  - mv Documentation/doxygen/ public/
+    - 'ls -la'
+    - apk update && apk add doxygen
+    - doxygen .doxygen
+    - mv phpqa/ public/
+    - mv Documentation/doxygen/ public/
   artifacts:
     paths:
     - public
