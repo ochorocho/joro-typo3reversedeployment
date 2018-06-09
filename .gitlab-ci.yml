@@ -15,7 +15,7 @@ phpqa:
   script:
     - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
     - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
-    - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir var/QA --analyzedDirs ./ --ignoredDirs var,vendor'
+    - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir var/QA --analyzedDirs ./ --ignoredDirs var,vendor' --buildDir ./phpqa
     - mv phpqa public/
   artifacts:
     when: always
