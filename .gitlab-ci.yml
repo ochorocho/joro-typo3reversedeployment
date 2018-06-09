@@ -25,6 +25,8 @@ phpqa:
 pages:
   stage: publish
   image: alpine
+  dependencies: 
+    - codequality
   script:
   - apk update && apk add doxygen
   - doxygen .doxygen
