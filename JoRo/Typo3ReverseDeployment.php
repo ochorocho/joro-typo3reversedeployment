@@ -466,21 +466,20 @@ Class Typo3ReverseDeployment
      */
     public function getLocalConfiguration($ssh)
     {
-        $path = $this->getTypo3RootPath();
-        $remoteConf = $ssh->exec($this->getPhpPathAndBinary() . " -r 'echo file_get_contents(\"$path/typo3conf/LocalConfiguration.php\");'");
+        $remoteCommand = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary()
+            . " " . $this->getPathToConsoleExecutable() . " configuration:showactive DB --json";
+        $remoteCommandResult = $ssh->exec($remoteCommand);
+        $conf = json_decode($remoteCommandResult, true);
 
-        $phpConfig = str_replace('<?php', '', $remoteConf);
-        $conf = eval($phpConfig);
-
-        if(isset($conf['DB']['Connections'])) { // current TYPO3 versions
-            return $conf['DB']['Connections'][$this->getConnectionPool()];
+        if(isset($conf['Connections'])) { // current TYPO3 versions
+            return $conf['Connections'][$this->getConnectionPool()];
         } else { // simple fallback for TYPO3 7
             return [
                 'driver' => 'mysqli',
-                'host' => $conf['DB']['host'],
-                'user' => $conf['DB']['username'],
-                'password' => $conf['DB']['password'],
-                'dbname' => $conf['DB']['database']
+                'host' => $conf['host'],
+                'user' => $conf['username'],
+                'password' => $conf['password'],
+                'dbname' => $conf['database']
             ];
         }
     }
