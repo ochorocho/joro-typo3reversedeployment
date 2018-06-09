@@ -16,11 +16,11 @@ phpqa:
     - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
     - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
     - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir build/phpqa/ --analyzedDirs ./ --ignoredDirs var,vendor'
-    - mv build/phpqa/ public/phpqa
+#    - mv build/phpqa/ public/
   artifacts:
     when: always
     paths:
-    - public
+    - phpqa
     
 pages:
   stage: publish
@@ -28,6 +28,7 @@ pages:
   script:
   - apk update && apk add doxygen
   - doxygen .doxygen
+  - mv phpqa/ public/
   - mv Documentation/doxygen/ public/
   artifacts:
     paths:
