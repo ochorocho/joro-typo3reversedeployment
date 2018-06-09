@@ -31,7 +31,7 @@ pages:
     - 'ls -la'
     - apk update && apk add doxygen
     - doxygen .doxygen
-    - mv phpqa/ public/
+    - mv phpqa/ public/phpqa
     - mv Documentation/doxygen/ public/
   artifacts:
     paths:
