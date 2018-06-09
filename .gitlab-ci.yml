@@ -31,7 +31,6 @@ pages:
     - 'ls -la'
     - apk update && apk add doxygen
     - doxygen .doxygen
-    - mkdir public/phpqa
     - mkdir .public
     - mv build/phpqa/ .public/
     - mv Documentation/doxygen/ .public/
