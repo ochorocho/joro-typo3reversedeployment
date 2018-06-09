@@ -28,6 +28,7 @@ pages:
   dependencies: 
     - phpqa
   script:
+  - ls -la
   - apk update && apk add doxygen
   - doxygen .doxygen
   - mv phpqa/ public/
