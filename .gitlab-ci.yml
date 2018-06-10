@@ -54,14 +54,14 @@ pages:
     - codeclimate
     - doxygen
   script:
-    - 'ls -la'
+    - echo 'Copy bits an pieces'
     - mkdir .public
     - mv phpqa/ .public/
     - mv codeclimate.html .public/
     - mv Documentation/doxygen/ .public/
-    - mv .public public
+    - mv .public public/
   artifacts:
     paths:
-    - public
+    - public/
   only:
   - master
