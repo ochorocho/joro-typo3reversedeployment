@@ -62,6 +62,6 @@ pages:
     - mv .public public
   artifacts:
     paths:
-    - public
+    - /
   only:
   - master
