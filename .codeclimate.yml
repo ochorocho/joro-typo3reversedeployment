@@ -25,8 +25,4 @@ ratings:
   - "**.js"
   - "**.module"
   - "**.php"
-exclude_paths:
-  - node_modules/
-  - webpack.config.js
-include_paths:
-  - **/*
+
