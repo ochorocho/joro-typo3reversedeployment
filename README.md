@@ -6,7 +6,13 @@ Features:
 * Download only referenced files to your local fileadmin
 * Download specific folders like ./uploads or download entire fileadmin
 
-Requires [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) on remote TYPO3 installation
+Requirements:
+* [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) (>=4.6) on remote TYPO3 installation
+* A SSH connection to the remote server
+* `rsync` to download files
+* Works with TYPO3 7.x/8.x
+
+
 
 Security
 --------
