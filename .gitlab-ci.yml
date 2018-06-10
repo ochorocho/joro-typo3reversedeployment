@@ -1,0 +1,67 @@
+stages:
+  - codequality
+  - docs
+  - deploy
+
+codeclimate:
+  stage: codequality
+  image: docker:stable
+  variables:
+    DOCKER_DRIVER: overlay2
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  script:
+    - docker run --rm --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate.html
+    - 'ls -la'
+  artifacts:
+    paths:
+    - codeclimate.html
+
+phpqa:
+  stage: codequality
+  image: zdenekdrahos/phpqa:v1.18.0
+  allow_failure: true
+  variables:
+    BACKEND_QA: "*/backend/var/QA"
+    BACKEND_CACHE: $CI_PROJECT_DIR/.composercache
+  cache:
+    paths:
+    - $BACKEND_CACHE
+  script:
+    - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
+    - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
+    - 'phpqa --report --tools phpmd:100,phpcpd:100,phploc,pdepend --buildDir phpqa/ --analyzedDirs ./ --ignoredDirs var,vendor'
+  artifacts:
+    paths:
+    - phpqa/
+
+doxygen:
+  stage: docs
+  image: alpine
+  script:
+    - apk update && apk add doxygen
+    - doxygen .doxygen
+  artifacts:
+    paths:
+    - Documentation/doxygen/
+
+pages:
+  stage: deploy
+  image: alpine
+  dependencies: 
+    - phpqa
+    - codeclimate
+    - doxygen
+  script:
+    - echo 'Copy bits an pieces'
+    - mkdir .public
+    - mv phpqa/ .public/
+    - mv codeclimate.html .public/
+    - mv Documentation/doxygen/ .public/
+    - mv .public public/
+  artifacts:
+    paths:
+    - public/
+  only:
+  - master

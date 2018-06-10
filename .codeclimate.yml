@@ -1,0 +1,32 @@
+---
+engines:
+  csslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - php
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+  radon:
+    enabled: true
+  rubocop:
+    enabled: false
+ratings:
+  paths:
+  - "**.css"
+  - "**.scss"
+  - "**.js"
+  - "**.module"
+  - "**.php"
+exclude_paths:
+  - vendor/
+  - sql/
+  - Documentation/
+
