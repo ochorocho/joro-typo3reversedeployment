@@ -13,30 +13,15 @@ codeclimate:
     - docker:stable-dind
   script:
     - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-    - mkdir codeclimate
-    - docker run --env SOURCE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" analyze -f html /code analyze -f html > codeclimate/codeclimate.html
-    - 'ls -la codeclimate'
-  artifacts:
-    paths: 
-    - codeclimate/
-
-code_quality:
-  stage: codequality
-  image: docker:stable
-  variables:
-    DOCKER_DRIVER: overlay2
-  allow_failure: true
-  services:
-    - docker:stable-dind
-  script:
-    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
     - docker run
         --env SOURCE_CODE="$PWD"
         --volume "$PWD":/code
         --volume /var/run/docker.sock:/var/run/docker.sock
-        "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
+        "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code analyze -f html > codeclimate.html
+    - 'ls -la'
   artifacts:
-    paths: [gl-code-quality-report.json]
+    paths:
+    - codeclimate.html
 
 phpqa:
   stage: codequality
@@ -74,9 +59,10 @@ pages:
     - codeclimate
     - doxygen
   script:
+    - 'ls -la'
     - mkdir .public
     - mv phpqa/ .public/
-    - mv codeclimate/ .public/
+    - mv codeclimate.html .public/
     - mv Documentation/doxygen/ .public/
     - mv .public public
   artifacts:
