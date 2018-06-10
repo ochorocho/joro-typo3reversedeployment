@@ -1,7 +1,7 @@
 stages:
   - codequality
   - docs
-  - publish
+  - deploy
 
 codeclimate:
   stage: codequality
@@ -47,7 +47,7 @@ doxygen:
     - Documentation/doxygen/
 
 pages:
-  stage: publish
+  stage: deploy
   image: alpine
   dependencies: 
     - phpqa
@@ -62,6 +62,6 @@ pages:
     - mv .public public
   artifacts:
     paths:
-    - ./
+    - public
   only:
   - master
