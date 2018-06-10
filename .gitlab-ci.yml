@@ -1,5 +1,6 @@
 stages:
   - codequality
+  - docs
   - publish
 
 codeclimate:
@@ -34,28 +35,32 @@ phpqa:
     - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
     - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir phpqa/ --analyzedDirs ./ --ignoredDirs var,vendor'
   artifacts:
-    when: always
     paths:
     - phpqa/
-    
+
+doxygen:
+  stage: docs
+  image: alpine
+  script:
+    - apk update && apk add doxygen
+    - doxygen .doxygen
+  artifacts:
+    paths:
+    - Documentation/doxygen/
+
 pages:
   stage: publish
   image: alpine
   dependencies: 
     - phpqa
     - codeclimate
+    - doxygen
   script:
-    - 'ls -la'
-    - apk update && apk add doxygen
-    - doxygen .doxygen
     - mkdir .public
     - mv phpqa/ .public/
-    - 'ls -la codeclimate/'
     - mv codeclimate/ .public/
-    - mv Documentation/doxygen/ .public/
-    - 'ls -la .public/'
+    - mv doxygen/ .public/
     - mv .public public
-    - 'ls -la public/'
   artifacts:
     paths:
     - public
