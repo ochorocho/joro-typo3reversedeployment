@@ -59,7 +59,7 @@ pages:
     - mkdir .public
     - mv phpqa/ .public/
     - mv codeclimate/ .public/
-    - mv doxygen/ .public/
+    - mv Documentation/doxygen/ .public/
     - mv .public public
   artifacts:
     paths:
