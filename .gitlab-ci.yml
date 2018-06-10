@@ -2,7 +2,7 @@ stages:
   - codequality
   - publish
 
-codequality:
+codeclimate:
   stage: codequality
   image: docker:stable
   variables:
@@ -43,6 +43,7 @@ pages:
   image: alpine
   dependencies: 
     - phpqa
+    - codeclimate
   script:
     - 'ls -la'
     - apk update && apk add doxygen
