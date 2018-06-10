@@ -25,4 +25,8 @@ ratings:
   - "**.js"
   - "**.module"
   - "**.php"
+exclude_paths:
+  - vendor/
+  - sql/
+  - Documentation/
 
