@@ -14,6 +14,7 @@ codequality:
     - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
     - mkdir codeclimate
     - docker run --env SOURCE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" analyze -f html /code analyze -f html > codeclimate/codeclimate.html
+    - 'ls -la codeclimate'
   artifacts:
     paths: 
     - codeclimate/
@@ -32,7 +33,6 @@ phpqa:
     - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
     - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
     - 'phpqa --report --tools phpcs:10000,phpunit:10000 --buildDir phpqa/ --analyzedDirs ./ --ignoredDirs var,vendor'
-    - 'ls -la'
   artifacts:
     when: always
     paths:
@@ -49,6 +49,7 @@ pages:
     - doxygen .doxygen
     - mkdir .public
     - mv phpqa/ .public/
+    - 'ls -la codeclimate/'
     - mv codeclimate/ .public/
     - mv Documentation/doxygen/ .public/
     - 'ls -la .public/'
