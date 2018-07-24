@@ -124,3 +124,12 @@ Then you can start the reverse deployment with a command like this:
 ```
 PASSPHRASE=mypassword vendor/bin/typo3reverse
 ```
+
+### Build phar file
+
+Using [MacFJA/PharBuilder](https://github.com/MacFJA/PharBuilder) package to create PHAR file
+
+
+```bash
+php -d phar.readonly=0 vendor/bin/phar-builder package composer.json --entry-point=./typo3reverse --gzip --name=typo3reverse.phar --output-dir=./
+```
