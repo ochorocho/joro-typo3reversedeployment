@@ -13,5 +13,8 @@
     },
     "bin": [
         "typo3reverse"
-    ]
+    ],
+    "require-dev": {
+        "clue/phar-composer": "^1.0"
+    }
 }
