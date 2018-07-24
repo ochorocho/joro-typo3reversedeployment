@@ -1,6 +1,5 @@
 stages:
   - codequality
-  - docs
   - build
   - deploy
 
@@ -14,16 +13,14 @@ codeclimate:
     - docker:stable-dind
   script:
     - docker run --rm --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate.html
-    - 'ls -la'
   artifacts:
     paths:
     - codeclimate.html
 
 build_phar:
-  stage: deploy
+  stage: build
   script:
     - composer install
-
   artifacts:
     expire_in: '1 hour'
     paths:
@@ -40,7 +37,7 @@ push_phar:
     - gitlab-release --message 'New automated release' typo3reverse.phar
 
 doxygen:
-  stage: docs
+  stage: build
   image: alpine
   script:
     - apk update && apk add doxygen
