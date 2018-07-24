@@ -19,7 +19,7 @@ codeclimate:
 
 build_phar:
   stage: build
-  image: akoehnlein/typo3:php72
+  image: akoehnlein/typo3:php72-alpine
   script:
     - apk add php7-bcmath
     - composer install
