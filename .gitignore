@@ -6,3 +6,4 @@
 /fileadmin/*
 /.reverse
 /typo3reversedeployment.phar
+/Documentation/doxygen/
