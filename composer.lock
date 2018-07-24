@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a759326a190f8c1e42a0bc44effd74be",
+    "content-hash": "d198b012d216efc13fd0d8f0225f94b9",
     "packages": [
         {
             "name": "neos/utility-files",
