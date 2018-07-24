@@ -1,6 +1,7 @@
 stages:
   - codequality
   - docs
+  - build
   - deploy
 
 codeclimate:
@@ -18,23 +19,25 @@ codeclimate:
     paths:
     - codeclimate.html
 
-phpqa:
-  stage: codequality
-  image: zdenekdrahos/phpqa:v1.18.0
-  allow_failure: true
-  variables:
-    BACKEND_QA: "*/backend/var/QA"
-    BACKEND_CACHE: $CI_PROJECT_DIR/.composercache
-  cache:
-    paths:
-    - $BACKEND_CACHE
+build_phar:
+  stage: deploy
   script:
-    - 'export COMPOSER_CACHE_DIR=$BACKEND_CACHE'
-    - 'composer install --ignore-platform-reqs --no-progress --no-suggest'
-    - 'phpqa --report --tools phpmd:100,phpcpd:100,phploc,pdepend --buildDir phpqa/ --analyzedDirs ./ --ignoredDirs var,vendor'
+    - composer install
+
   artifacts:
+    expire_in: '1 hour'
     paths:
-    - phpqa/
+      - typo3reverse.phar
+
+push_phar:
+  image: inetprocess/gitlab-release
+  stage: deploy
+  dependencies:
+    - build_phar
+  only:
+    - tag
+  script:
+    - gitlab-release --message 'New automated release' typo3reverse.phar
 
 doxygen:
   stage: docs
@@ -49,14 +52,15 @@ doxygen:
 pages:
   stage: deploy
   image: alpine
-  dependencies: 
-    - phpqa
+  dependencies:
     - codeclimate
     - doxygen
   script:
     - echo 'Copy bits an pieces'
     - mkdir .public
-    - mv phpqa/ .public/
+    - wget -O .public/index.php https://gitlab.knallimall.org/snippets/32/raw
+    - echo "<li>Commit $CI_COMMIT_SHA</li><li>Branch $CI_COMMIT_REF_NAME</li>" >> git.txt
+    - mv git.txt .public/
     - mv codeclimate.html .public/
     - mv Documentation/doxygen/ .public/
     - mv .public public/
