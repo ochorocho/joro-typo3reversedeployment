@@ -129,7 +129,8 @@ PASSPHRASE=mypassword vendor/bin/typo3reverse
 
 Using [MacFJA/PharBuilder](https://github.com/MacFJA/PharBuilder) package to create PHAR file
 
+For configuration see composer.json `extra -> phar-builder`
 
 ```bash
-php -d phar.readonly=0 vendor/bin/phar-builder package composer.json --entry-point=./typo3reverse --gzip --name=typo3reverse.phar --output-dir=./
+php -d phar.readonly=0 vendor/bin/phar-builder package
 ```
