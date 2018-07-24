@@ -21,6 +21,7 @@ build_phar:
   stage: build
   image: akoehnlein/surf:php72
   script:
+    - composer install
     - php -d phar.readonly=0 vendor/bin/phar-builder package
   artifacts:
     expire_in: '1 hour'
