@@ -19,7 +19,7 @@ stages:
 
 build_phar:
   stage: build
-  image: akoehnlein/typo3:php72-alpine
+  image: php:7.0-alpine3.7
   script:
     - apk add php7-bcmath
     - composer install
@@ -76,6 +76,7 @@ pages:
     - mv git.txt .public/
     # - mv codeclimate.html .public/
     - mv Documentation/doxygen/ .public/
+    - mv Documentation/sphiny/ .public/
     - mv .public public/
   artifacts:
     paths:
