@@ -66,7 +66,7 @@ pages:
   stage: deploy
   image: alpine
   dependencies:
-    - codeclimate
+    #- codeclimate
     - doxygen
   script:
     - echo 'Copy bits an pieces'
@@ -74,7 +74,7 @@ pages:
     - wget -O .public/index.php https://gitlab.knallimall.org/snippets/32/raw
     - echo "<li>Commit $CI_COMMIT_SHA</li><li>Branch $CI_COMMIT_REF_NAME</li>" >> git.txt
     - mv git.txt .public/
-    - mv codeclimate.html .public/
+    # - mv codeclimate.html .public/
     - mv Documentation/doxygen/ .public/
     - mv .public public/
   artifacts:
