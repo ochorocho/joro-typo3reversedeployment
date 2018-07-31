@@ -1,21 +1,21 @@
 stages:
-  - codequality
+#  - codequality
   - build
   - deploy
 
-codeclimate:
-  stage: codequality
-  image: docker:stable
-  variables:
-    DOCKER_DRIVER: overlay2
-  allow_failure: true
-  services:
-    - docker:stable-dind
-  script:
-    - docker run --rm --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate.html
-  artifacts:
-    paths:
-    - codeclimate.html
+#codeclimate:
+#  stage: codequality
+#  image: docker:stable
+#  variables:
+#    DOCKER_DRIVER: overlay2
+#  allow_failure: true
+#  services:
+#    - docker:stable-dind
+#  script:
+#    - docker run --rm --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate.html
+#  artifacts:
+#    paths:
+#    - codeclimate.html
 
 build_phar:
   stage: build
@@ -29,15 +29,28 @@ build_phar:
     paths:
       - typo3reverse.phar
 
-push_phar:
-  image: inetprocess/gitlab-release
-  stage: deploy
-  dependencies:
-    - build_phar
-  only:
-    - tag
+#push_phar:
+#  image: inetprocess/gitlab-release
+#  stage: deploy
+#  dependencies:
+#    - build_phar
+#  only:
+#    - tag
+#  script:
+#    - gitlab-release --message 'New automated release' typo3reverse.phar
+
+
+sphinx:
+  stage: build
+  image: alpine
   script:
-    - gitlab-release --message 'New automated release' typo3reverse.phar
+    - apk update && apk add --update python python-dev py-pip build-base
+    - pip install -U Sphinx
+    - pip install sphinx_rtd_theme
+    - sphinx-build -b html Documentation/ Documentation/sphinx
+  artifacts:
+    paths:
+    - Documentation/sphinx/
 
 doxygen:
   stage: build
