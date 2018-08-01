@@ -19,9 +19,8 @@ stages:
 
 build_phar:
   stage: build
-  image: php:7.0-alpine3.7
+  image: ochorocho/one-for-all:phar
   script:
-    - apk add php7-bcmath
     - composer install
     - php -d phar.readonly=0 vendor/bin/phar-builder package
   artifacts:
