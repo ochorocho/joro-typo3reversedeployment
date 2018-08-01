@@ -42,11 +42,8 @@ build_phar:
 
 sphinx:
   stage: build
-  image: alpine
+  image: ochorocho/one-for-all-generator:sphinx
   script:
-    - apk update && apk add --update python python-dev py-pip build-base
-    - pip install -U Sphinx
-    - pip install sphinx_rtd_theme
     - sphinx-build -b html Documentation/ Documentation/sphinx
   artifacts:
     paths:
@@ -54,9 +51,8 @@ sphinx:
 
 doxygen:
   stage: build
-  image: alpine
+  image: ochorocho/one-for-all-generator:doxygen
   script:
-    - apk update && apk add doxygen
     - doxygen .doxygen
   artifacts:
     paths:
