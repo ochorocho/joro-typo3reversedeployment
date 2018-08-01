@@ -19,7 +19,7 @@ stages:
 
 build_phar:
   stage: build
-  image: ochorocho/one-for-all:phar
+  image: ochorocho/one-for-all-generator:phar
   script:
     - composer install
     - php -d phar.readonly=0 vendor/bin/phar-builder package
