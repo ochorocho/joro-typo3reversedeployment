@@ -19,9 +19,9 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = u'KrautRöhre'
-copyright = u'2018, Krauts'
-author = u'Krauts'
+project = u'TYPO3 Reverse Deployment'
+copyright = u'2018, ochorocho'
+author = u'ochorocho'
 
 # The short X.Y version
 version = u''
