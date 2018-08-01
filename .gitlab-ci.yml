@@ -1,21 +1,21 @@
 stages:
-#  - codequality
+  - codequality
   - build
   - deploy
 
-#codeclimate:
-#  stage: codequality
-#  image: docker:stable
-#  variables:
-#    DOCKER_DRIVER: overlay2
-#  allow_failure: true
-#  services:
-#    - docker:stable-dind
-#  script:
-#    - docker run --rm --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate.html
-#  artifacts:
-#    paths:
-#    - codeclimate.html
+codeclimate:
+  stage: codequality
+  image: docker:stable
+  variables:
+    DOCKER_DRIVER: overlay2
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  script:
+    - docker run --rm --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate.html
+  artifacts:
+    paths:
+    - codeclimate.html
 
 build_phar:
   stage: build
@@ -61,17 +61,18 @@ pages:
   stage: deploy
   image: alpine
   dependencies:
-    #- codeclimate
+    - codeclimate
     - doxygen
+    - sphinx
   script:
     - echo 'Copy bits an pieces'
     - mkdir .public
     - wget -O .public/index.php https://gitlab.knallimall.org/snippets/32/raw
     - echo "<li>Commit $CI_COMMIT_SHA</li><li>Branch $CI_COMMIT_REF_NAME</li>" >> git.txt
     - mv git.txt .public/
-    # - mv codeclimate.html .public/
+    - mv codeclimate.html .public/
     - mv Documentation/doxygen/ .public/
-    - mv Documentation/sphiny/ .public/
+    - mv Documentation/sphinx/ .public/
     - mv .public public/
   artifacts:
     paths:
