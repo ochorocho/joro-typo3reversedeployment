@@ -59,7 +59,7 @@ doxygen:
 
 pages:
   stage: deploy
-  image: alpine
+  image: php:7.0-cli-alpine
   dependencies:
     - codeclimate
     - doxygen
