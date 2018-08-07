@@ -70,6 +70,8 @@ pages:
     - wget -O .public/index.php https://gitlab.knallimall.org/snippets/32/raw
     - echo "<li>Commit $CI_COMMIT_SHA</li><li>Branch $CI_COMMIT_REF_NAME</li>" >> git.txt
     - mv git.txt .public/
+    - php .public/index.php
+    - rm .public/index.php
     - mv codeclimate.html .public/
     - mv Documentation/doxygen/ .public/
     - mv Documentation/sphinx/ .public/
