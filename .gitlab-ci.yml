@@ -68,12 +68,10 @@ pages:
     - echo 'Copy bits an pieces'
     - mkdir .public
     - wget -O .public/index.php https://gitlab.knallimall.org/snippets/32/raw
-    - echo "<li>Commit $CI_COMMIT_SHA</li><li>Branch $CI_COMMIT_REF_NAME</li>" >> git.txt
-    - mv git.txt .public/
     - mv codeclimate .public/
     - mv Documentation/doxygen/ .public/
     - mv Documentation/sphinx/ .public/
-    - php .public/index.php
+    - cd .public/ && php index.php && cd ..
     - rm .public/index.php
     - mv .public public/
   artifacts:
