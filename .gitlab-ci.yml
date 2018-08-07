@@ -13,7 +13,7 @@ codeclimate:
     - docker:stable-dind
   script:
     - mkdir codeclimate/
-    - docker run --rm --env CODECLIMATE_CODE="$PWD" --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate/index.html
+    - docker run --rm --env CODECLIMATE_CODE="$PWD" --env CODECLIMATE_DEBUG=1 --volume "$PWD":/code --volume /var/run/docker.sock:/var/run/docker.sock --volume /tmp/cc:/tmp/cc codeclimate/codeclimate analyze -f html > codeclimate/index.html
   artifacts:
     paths:
     - codeclimate
