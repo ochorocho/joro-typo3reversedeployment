@@ -73,9 +73,9 @@ pages:
     - mv codeclimate .public/
     - mv Documentation/doxygen/ .public/
     - mv Documentation/sphinx/ .public/
-    - mv .public public/
     - php .public/index.php
     - rm .public/index.php
+    - mv .public public/
   artifacts:
     paths:
     - public/
