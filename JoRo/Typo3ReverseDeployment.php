@@ -634,6 +634,6 @@ Class Typo3ReverseDeployment
      */
     public function __call($name, $args)
     {
-        exit("\033[31mThe method '$name' which is used in your reverse deployment configuration cannot be found in the installed version of joro/reversedeployment. Please install the latest version of joro/reversedeployment.\033[0m" . PHP_EOL);
+        exit("\033[31mThe method '$name', which is used in your reverse deployment configuration, cannot be found in the installed version of joro/reversedeployment. Please install the latest version of joro/reversedeployment.\033[0m" . PHP_EOL);
     }
 }
