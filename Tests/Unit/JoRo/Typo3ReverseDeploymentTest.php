@@ -3,7 +3,6 @@
 namespace JoRo\Tests\Unit;
 
 use JoRo\Typo3ReverseDeployment;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class Typo3ReverseDeploymentTest extends TestCase
