@@ -636,4 +636,15 @@ Class Typo3ReverseDeployment
         $ssh->exec($this->getPhpPathAndBinary() . " -r 'mkdir(\"$tempFolder\", 0777, true);'");
         $ssh->exec($this->getPhpPathAndBinary() . " -r 'file_put_contents(\"$htaccess\",\"deny from all\");'");
     }
+
+    /**
+     * Catch undefined method calls and show hint to update to latest version.
+     *
+     * @param $name
+     * @param $args
+     */
+    public function __call($name, $args)
+    {
+        exit("\033[31mThe method '$name', which is used in your reverse deployment configuration, cannot be found in the installed version of joro/reversedeployment. Please install the latest version of joro/reversedeployment.\033[0m" . PHP_EOL);
+    }
 }
