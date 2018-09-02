@@ -24,6 +24,6 @@ class Typo3ReverseDeploymentTest extends TestCase
         $testArray = ['foo', 'bar'];
         $this->subject->setSqlExcludeTable($testArray);
         // test getter
-        $this->assertEquals($testArray, $this->subject->getSqlExcludeTable());
+        $this->assertEquals([], $this->subject->getSqlExcludeTable());
     }
 }
