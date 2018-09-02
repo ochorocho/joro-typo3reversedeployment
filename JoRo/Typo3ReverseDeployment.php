@@ -374,6 +374,17 @@ Class Typo3ReverseDeployment
     }
 
     /**
+     * Add item to $sqlExcludeTable
+     * Use after 'setSqlExcludeTable' otherwise it will be overwritten
+     *
+     * @param array $sqlExcludeTable
+     */
+    public function addSqlExcludeTable($sqlExcludeTable)
+    {
+        $this->sqlExcludeTable = array_merge($this->getSqlExcludeTable(), $sqlExcludeTable);
+    }
+
+    /**
      * Get custom php binary path
      *
      * @return string
