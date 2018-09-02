@@ -1,0 +1,30 @@
+language: php
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.1
+    - php: 7.2
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - parallel
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_install:
+  - composer self-update
+  - composer --version
+
+before_script:
+  - phpenv config-rm xdebug.ini
+  - composer install
+
+script:
+  - >
+    vendor/bin/phpunit Tests/Unit/JoRo

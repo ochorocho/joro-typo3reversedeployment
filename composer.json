@@ -15,7 +15,8 @@
     "typo3reverse"
   ],
   "require-dev": {
-    "macfja/phar-builder": "^0.2.7"
+    "macfja/phar-builder": "^0.2.7",
+    "phpunit/phpunit": "^7.3"
   },
   "extra": {
     "phar-builder": {
