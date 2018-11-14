@@ -73,6 +73,7 @@ $reverseDeploy->getDatabase($ssh);
 /**
  * Get fileadmin
  */
+// optional - download only used files: $reverseDeploy->setFileadminOnlyUsed(true);
 $reverseDeploy->setFileTarget("./fileadmin/");
 $reverseDeploy->getFiles($ssh);
 ```
