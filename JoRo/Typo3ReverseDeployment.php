@@ -1,12 +1,20 @@
 <?php
-
 namespace JoRo;
 
-use phpseclib\Crypt\RSA;
-use phpseclib\Net\SSH2;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 Class Typo3ReverseDeployment
 {
+    /**
+     * @var string
+     */
+    protected $tempRemotePath = '/typo3temp/joro_typo3reversedeployment/';
+
+    /**
+     * @var string
+     */
+    protected $tempLocalPath = '';
 
     /**
      * @var string
@@ -93,7 +101,7 @@ Class Typo3ReverseDeployment
      * @var string $rsyncPathAndBinary
      */
     protected $rsyncPathAndBinary = "rsync";
-    
+
     /**
      * Relative path to typo3_console executable
      *
@@ -421,7 +429,7 @@ Class Typo3ReverseDeployment
     {
         $this->rsyncPathAndBinary = $rsyncPathAndBinary;
     }
-    
+
     /**
      * Get path to typo3_console executable
      *
@@ -431,7 +439,7 @@ Class Typo3ReverseDeployment
     {
         return $this->pathToConsoleExecutable;
     }
-    
+
     /**
      * Set path to typo3_console executable
      *
@@ -443,44 +451,114 @@ Class Typo3ReverseDeployment
     }
 
     /**
-     * Connect to Server via SSH
-     *
-     * @param $host
-     * @return SSH2
+     * Set remote server uri
+     * @param string $remoteServer
      */
-    public function ssh($host)
+    public function setRemoteServer($remoteServer)
     {
-        $key = new RSA();
-        if($passphrase = $this->getPrivateKeyPassphrase()) {
-            $key->setPassword($passphrase);
+        $this->remoteServer = $remoteServer;
+    }
+
+    /**
+     * Get remote server uir
+     * @return string
+     */
+    public function getRemoteServer()
+    {
+        return $this->remoteServer;
+    }
+
+    /**
+     * Get the temporary remote path, relativ to web root
+     * @return string
+     */
+    public function getTempRemotePath()
+    {
+        return $this->tempRemotePath;
+    }
+
+    /**
+     * Set the temporary remote path, relativ to web root
+     * @param string $remotePath
+     */
+    public function setTempRemotePath($remotePath)
+    {
+        $this->tempRemotePath = $remotePath;
+    }
+
+    /**
+     * Set a local temporary directory path
+     * @return string
+     */
+    public function getLocalTempPath()
+    {
+        return $this->tempLocalPath;
+    }
+
+    /**
+     * Path to a local directory
+     * @param string $localTemporaryPath
+     */
+    public function setLocalTempPath($localTemporaryPath)
+    {
+        $this->tempLocalPath = rtrim($localTemporaryPath, '\\') . '\\';
+    }
+
+    /**
+     * Execute an command on remote server
+     *
+     * @param string $command Command to execute on remote server
+     * @return array Array with exit code as first index and the command output as second index
+     */
+    public function executeSshCommand($command)
+    {
+        $callback = null;
+
+        $sshOptions = ['-A'];
+        if ($this->getSshPort()) {
+            $sshOptions[] = '-p ' . escapeshellarg((int)$this->getSshPort());
         }
 
-        $key->loadKey(file_get_contents($this->getPrivateKey()));
-        $ssh = new SSH2($host, $this->getSshPort());
-
-        if (!$ssh->login($this->getUser(), $key)) {
-            exit("\033[31mLogin Failed\033[0m" . PHP_EOL);
-        } else {
-            echo "\033[32mSSH to " . $this->getUser() . "@$host successful\033[0m" . PHP_EOL;
+        if ($this->getPrivateKey()) {
+            $sshOptions[] = '-i ' . escapeshellarg($this->getPrivateKey());
         }
 
-        $this->ensureRemoteDirectoryExists($ssh);
+        $sshCommand = 'ssh ' . implode(' ', $sshOptions) . ' '
+            . escapeshellarg($this->getUser() . '@' .  $this->getRemoteServer()) . ' '
+            . escapeshellarg($command);
 
-        return $ssh;
+        $process = new Process($sshCommand);
+        $process->setTimeout(null);
+
+        $exitCode = $process->run($callback);
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        return [$exitCode, trim($process->getOutput())];
     }
 
     /**
      * Load LocalConfiguration.php and return connection details as array
      *
-     * @param $ssh
-     * @return mixed
+     * @return array
      */
-    public function getLocalConfiguration($ssh)
+    public function getLocalConfiguration()
     {
-        $remoteCommand = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary()
-            . " " . $this->getPathToConsoleExecutable() . " configuration:showactive DB --json";
-        $remoteCommandResult = $ssh->exec($remoteCommand);
-        $conf = json_decode($remoteCommandResult, true);
+        $remoteCommand =
+            'cd ' . $this->getTypo3RootPath() . ' && '
+            . $this->getPhpPathAndBinary() . ' ' . $this->getPathToConsoleExecutable() . ' configuration:showactive DB --json';
+        $remoteCommandResult = $this->executeSshCommand($remoteCommand);
+
+        if ($remoteCommandResult[0] != 0) {
+            throw new Exception(
+                'Could not get database connection on remote server, ' . $remoteCommandResult[0],
+                1549053038
+            );
+        }
+
+        $conf = json_decode($remoteCommandResult[1], true);
 
         if(isset($conf['Connections'])) { // current TYPO3 versions
             return $conf['Connections'][$this->getConnectionPool()];
@@ -498,34 +576,37 @@ Class Typo3ReverseDeployment
     /**
      * Export and download database from remote TYPO3
      *
-     * @param $ssh
      * @return string
      */
-    public function getDatabase($ssh)
+    public function getDatabase()
     {
+        $this->ensureRemoteDirectoryExists();
+        $conf = $this->getLocalConfiguration();
 
-        $conf = $this->getLocalConfiguration($ssh);
-
-        /**
-         * Build --exclude-tables for `typo3cms database:export` command
-         * @return string $ignoredTables
-         */
-        $ignoredTables = count($this->sqlExcludeTable) > 0 ? " --exclude-tables " : "";
+        $ignoredTables = count($this->sqlExcludeTable) > 0 ? '--exclude-tables ' : '';
         foreach ($this->sqlExcludeTable as $exclude) {
             $ignoredTables .= end($this->sqlExcludeTable) == $exclude ? $exclude . '' : $exclude . ',';
         }
 
-        /**
-         * Export and download database
-         */
-        $sqlRemoteTarget = $this->getTypo3RootPath() . 'typo3temp/joro_typo3reversedeployment/' . date("YmdHis") . "-" . $conf['dbname'] . ".sql";
-        $sqlExport = "cd " . $this->getTypo3RootPath() . " && " . $this->getPhpPathAndBinary() . " " . $this->getPathToConsoleExecutable() . " database:export";
+        // Export and download database
+        $sqlRemoteTarget = $this->getTypo3RootPath() . $this->getTempRemotePath() . date('YmdHis') . '-' . $conf['dbname'] . '.sql';
+        $sqlExport = 'cd ' . $this->getTypo3RootPath() . ' && ' . $this->getPhpPathAndBinary() . ' ' . $this->getPathToConsoleExecutable() . ' database:export';
 
-        echo "\033[32mExport DB: $sqlExport\033[0m" . PHP_EOL;
-        $ssh->exec($sqlExport . " $ignoredTables > $sqlRemoteTarget");
+        echo "\033[32mExport DB\033[0m" . PHP_EOL;
+        $this->executeSshCommand($sqlExport . ' ' . $ignoredTables . ' > ' . $sqlRemoteTarget);
 
-        exec($this->getRsyncPathAndBinary() . " -avz " . $this->getSshPortParam() . ' ' . $this->getUser() . "@$ssh->host:$sqlRemoteTarget " . $this->getSqlTarget());
-        $ssh->exec($this->getPhpPathAndBinary() . " -r 'unlink(\"$sqlRemoteTarget\");'");
+        echo "\033[32mDownload DB\033[0m" . PHP_EOL;
+        echo $this->getRsyncPathAndBinary() . ' -avz ' . $this->getSshPortParam() . ' ' .
+            $this->getUser() . '@' . $this->getRemoteServer() . ':' . $sqlRemoteTarget . ' ' .
+            $this->getSqlTarget() . "\n";
+        exec(
+            $this->getRsyncPathAndBinary() . ' -avz ' . $this->getSshPortParam() . ' ' .
+            $this->getUser() . '@' . $this->getRemoteServer() . ':' . $sqlRemoteTarget . ' ' .
+            $this->getSqlTarget()
+        );
+
+        echo "\033[32mDelete DB-Dump\033[0m" . PHP_EOL;
+        $this->executeSshCommand($this->getPhpPathAndBinary() . " -r 'unlink(\"$sqlRemoteTarget\");'");
 
         return $sqlRemoteTarget;
     }
@@ -536,41 +617,49 @@ Class Typo3ReverseDeployment
      * - Download all
      * - Download additional folders like ./uploads
      *
-     * @param $ssh
      * @return bool
      */
-    public function getFiles($ssh)
+    public function getFiles()
     {
-        $tempPhp = $this->getCreateTempFileForDownload($ssh);
+        $tempPhp = $this->getCreateTempFileForDownload();
         $filesFrom = ' --files-from=' . $tempPhp . ' ';
-        $exlude = " --exclude={" . implode(",", $this->getExclude()) . "} ";
+        $exclude = ' --exclude={' . implode(',', $this->getExclude()) . '} ';
         $fileadminRemote = $this->getTypo3RootPath();
 
         /**
          * Download files in list
          */
         echo "\033[32mDownload files to " . $this->getFileTarget() . "\033[0m" . PHP_EOL;
-        exec($this->getRsyncPathAndBinary() . ' -h --progress -avz -r -L ' . $this->getSshPortParam() . $filesFrom . $exlude . $this->getUser() . '@' . $ssh->host . ':' . $fileadminRemote . " " . $this->getFileTarget(),$output, $return);
+        exec(
+            $this->getRsyncPathAndBinary() . ' -h --progress -avz -r -L '
+            . $this->getSshPortParam() . $filesFrom . $exclude
+            . $this->getUser() . '@' . $this->getRemoteServer() . ':' . $fileadminRemote . " " . $this->getFileTarget(),
+            $output,
+            $return
+        );
 
         $output = array_reverse($output);
 
         echo $output[1] . PHP_EOL;
         echo $output[0] . PHP_EOL;
 
+        echo "\033[32mDelete temporary file for sync\033[0m" . PHP_EOL;
+        unlink($tempPhp);
+
         return $return;
     }
 
     /**
      * Get all files referenced/used in this TYPO3 instance
-     *
-     * @param $ssh
      * @return string
      */
-    private function getCreateTempFileForDownload($ssh) {
-        $conf = $this->getLocalConfiguration($ssh);
+    private function getCreateTempFileForDownload() {
+        $this->ensureRemoteDirectoryExists();
+        $conf = $this->getLocalConfiguration();
+        $tempPhp = ! empty($this->getLocalTempPath()) ?: sys_get_temp_dir();
+        $tempPhp .= '.rsync_files';
         $i = 0;
 
-        $tempPhp = sys_get_temp_dir() . '.rsync_files';
         $files = [];
         if ($conf['driver'] == 'mysqli' && $this->getFileadminOnlyUsed()) {
 
@@ -582,7 +671,7 @@ Class Typo3ReverseDeployment
              * Select only files with references (only used files)
              * query SELECT * FROM sys_file AS t1 INNER JOIN sys_file_reference AS t2 ON t1.uid = t2.uid_local WHERE t1.uid = t1.uid
              */
-            $filesUsed = $ssh->exec($this->getPhpPathAndBinary() . " -r '
+            $filesUsed = $this->executeSshCommand($this->getPhpPathAndBinary() . " -r '
                 \$mysqli = new \mysqli(\"" . $conf['host'] . "\", \"" . $conf['user'] . "\", \"" . $conf['password'] . "\", \"" . $conf['dbname'] . "\");
                 if (\$mysqli->connect_errno) {
                     printf(\"Connect failed on TYPO3 Remote: %s\n\", \$mysqli->connect_error);
@@ -627,14 +716,16 @@ Class Typo3ReverseDeployment
      * - Folder for temporary files typo3temp/joro_typo3reversedeployment/
      * - For Security .htaccess
      *
-     * @param $ssh
+     * @todo fetch exception
      */
-    protected function ensureRemoteDirectoryExists($ssh)
+    protected function ensureRemoteDirectoryExists()
     {
-        $tempFolder = $this->getTypo3RootPath() . "typo3temp/joro_typo3reversedeployment/";
+        $tempFolder = $this->getTypo3RootPath() . $this->getTempRemotePath();
         $htaccess = $tempFolder . '.htaccess';
-        $ssh->exec($this->getPhpPathAndBinary() . " -r 'mkdir(\"$tempFolder\", 0777, true);'");
-        $ssh->exec($this->getPhpPathAndBinary() . " -r 'file_put_contents(\"$htaccess\",\"deny from all\");'");
+
+        $command = 'mkdir -p ' . $tempFolder . ' && '
+            . $this->getPhpPathAndBinary() . ' \'-r file_put_contents("' . $htaccess . '", "deny from all");\'';
+        $this->executeSshCommand($command);
     }
 
     /**
