@@ -451,7 +451,7 @@ Class Typo3ReverseDeployment
     }
 
     /**
-     * Set remote server uri
+     * Set remote server uri or IP-Address
      * @param string $remoteServer
      */
     public function setRemoteServer($remoteServer)
@@ -460,7 +460,7 @@ Class Typo3ReverseDeployment
     }
 
     /**
-     * Get remote server uir
+     * Get remote server uri or IP-Address
      * @return string
      */
     public function getRemoteServer()
