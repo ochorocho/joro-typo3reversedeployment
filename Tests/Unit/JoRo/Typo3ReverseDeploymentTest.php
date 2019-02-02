@@ -34,13 +34,13 @@ class Typo3ReverseDeploymentTest extends TestCase
     public function hasLocalTemporaryPathATrailingSlash()
     {
         $testPathWithoutSlash= '/var/www/my-project';
-        $assertetPath = $testPathWithoutSlash . '/';
+        $expectedPath = $testPathWithoutSlash . '/';
 
         $this->subject->setLocalTempPath($testPathWithoutSlash);
-        $this->assertSame($assertetPath, $this->subject->getLocalTempPath());
+        $this->assertSame($expectedPath, $this->subject->getLocalTempPath());
 
         $testPathWithSlash= '/var/www/my-project/';
         $this->subject->setLocalTempPath($testPathWithSlash);
-        $this->assertSame($assertetPath, $this->subject->getLocalTempPath());
+        $this->assertSame($expectedPath, $this->subject->getLocalTempPath());
     }
 }
