@@ -26,4 +26,21 @@ class Typo3ReverseDeploymentTest extends TestCase
         // test getter
         $this->assertEquals($testArray, $this->subject->getSqlExcludeTable());
     }
+
+    /**
+     * Test if the temporary local path has an trailing slash
+     * @test
+     */
+    public function hasLocalTemporaryPathATrailingSlash()
+    {
+        $testPathWithoutSlash= '/var/www/my-project';
+        $assertetPath = $testPathWithoutSlash . '/';
+
+        $this->subject->setLocalTempPath($testPathWithoutSlash);
+        $this->assertSame($assertetPath, $this->subject->getLocalTempPath());
+
+        $testPathWithSlash= '/var/www/my-project/';
+        $this->subject->setLocalTempPath($testPathWithSlash);
+        $this->assertSame($assertetPath, $this->subject->getLocalTempPath());
+    }
 }

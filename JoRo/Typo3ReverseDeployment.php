@@ -501,7 +501,7 @@ Class Typo3ReverseDeployment
      */
     public function setLocalTempPath($localTemporaryPath)
     {
-        $this->tempLocalPath = rtrim($localTemporaryPath, '\\') . '\\';
+        $this->tempLocalPath = rtrim($localTemporaryPath, '/') . '/';
     }
 
     /**
