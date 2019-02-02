@@ -28,6 +28,21 @@ class Typo3ReverseDeploymentTest extends TestCase
     }
 
     /**
+     * Check if the setExclude function override the exclude definition
+     * with function addExclude
+     * @test
+     */
+    public function folderSetExcludeOverrideAddExclude()
+    {
+        $testAddExcludeArray = ['foo', 'bar', 'test'];
+        $testSetExcludeArray = ['folder1', 'folder2'];
+        $this->subject->addExclude($testAddExcludeArray);
+        $this->subject->setExclude($testSetExcludeArray);
+
+        $this->assertSame($testSetExcludeArray, $this->subject->getExclude());
+    }
+
+    /**
      * Test if the temporary local path has an trailing slash
      * @test
      */
