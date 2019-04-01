@@ -60,21 +60,22 @@ $reverseDeploy->setTypo3RootPath('/var/www/html/');
  * Connect to Server
  */
 $reverseDeploy->setUser('USERNAME');
+$reverseDeploy->setRemoteServer('example.org');
 // optional: $reverseDeploy->setPrivateKey(getenv('HOME') . '/.ssh/id_rsa');
 // optional: $reverseDeploy->setSshPort(222);
-$ssh = $reverseDeploy->ssh('example.org');
 
 /**
  * Get database
  */
 $reverseDeploy->setSqlExcludeTable(['sys_log']);
 $reverseDeploy->setSqlTarget("./tmp/");
-$reverseDeploy->getDatabase($ssh);
+$reverseDeploy->getDatabase();
 
 /**
  * Get fileadmin
  */
 // optional - download only used files: $reverseDeploy->setFileadminOnlyUsed(true);
+// optional - to download files in ddev docker container: $reverseDeploy->setLocalTempPath('/var/www/web/');
 $reverseDeploy->setFileTarget("./fileadmin/");
 $reverseDeploy->getFiles($ssh);
 ```
@@ -107,7 +108,7 @@ You can define your passphrase like shown in this example:
  */
 $reverseDeploy->setPrivateKeyPassphrase('mypassword');
 $reverseDeploy->setUser('USERNAME');
-$ssh = $reverseDeploy->ssh('example.org');
+$reverseDeploy->setRemoteServer('example.org');
 ```
 
 If you do not want to have your passphrase stored in a file, you can use an environment variable:
@@ -118,7 +119,7 @@ If you do not want to have your passphrase stored in a file, you can use an envi
  */
 $reverseDeploy->setPrivateKeyPassphrase(getenv('PASSPHRASE'));
 $reverseDeploy->setUser('USERNAME');
-$ssh = $reverseDeploy->ssh('example.org');
+$reverseDeploy->setRemoteServer('example.org');
 ```
 
 Then you can start the reverse deployment with a command like this:
