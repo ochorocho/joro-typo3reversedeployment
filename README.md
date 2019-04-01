@@ -13,7 +13,8 @@ Requirements:
 * `rsync` to download files
 * Works with TYPO3 7.x/8.x
 
-
+:warning: In version 2.0.0 `...->ssh('example.org');
+changes to `...->setRemoteServer('example.org');
 
 Security
 --------
