@@ -657,7 +657,7 @@ Class Typo3ReverseDeployment
         $this->ensureRemoteDirectoryExists();
         $conf = $this->getLocalConfiguration();
         $tempPhp = ! empty($this->getLocalTempPath()) ?: sys_get_temp_dir();
-        $tempPhp .= '.rsync_files';
+        $tempPhp = rtrim($tempPhp, '/') . '/.rsync_files';
         $i = 0;
 
         $files = [];
