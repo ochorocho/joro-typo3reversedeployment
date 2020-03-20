@@ -590,9 +590,9 @@ Class Typo3ReverseDeployment
 
         // Export and download database
         $sqlRemoteTarget = $this->getTypo3RootPath() . $this->getTempRemotePath() . date('YmdHis') . '-' . $conf['dbname'] . '.sql';
-        $sqlExport = 'cd ' . $this->getTypo3RootPath() . ' && ' . $this->getPhpPathAndBinary() . ' ' . $this->getPathToConsoleExecutable() . ' database:export';
+        $sqlExport = 'cd ' . $this->getTypo3RootPath() . ' && ' . $this->getPhpPathAndBinary() . ' ' . $this->getPathToConsoleExecutable() . ' database:export -c ' . $this->getConnectionPool();
 
-        echo "\033[32mExport DB\033[0m" . PHP_EOL;
+        echo sprintf("\033[32mExport %s DB \033[0m", $this->getConnectionPool()) . PHP_EOL;
         $this->executeSshCommand($sqlExport . ' ' . $ignoredTables . ' > ' . $sqlRemoteTarget);
 
         echo "\033[32mDownload DB\033[0m" . PHP_EOL;
