@@ -2,8 +2,8 @@
 
 namespace JoRo;
 
+use JoRo\Exception\InvalidConfigurationException;
 use \Neos\Utility\Files;
-use \JoRo\Typo3ReverseDeployment;
 
 Class ReversePath
 {
@@ -19,7 +19,7 @@ Class ReversePath
     {
         $path = $this->getDeploymentsBasePath($path);
         $files = glob(Files::concatenatePaths(array($path, '*.php')));
-        return array_map(function ($file) use ($path) {
+        return array_map(static function ($file) use ($path) {
             return substr($file, strlen($path) + 1, -4);
         }, $files);
     }
@@ -31,11 +31,11 @@ Class ReversePath
      *
      * @param string $path An absolute path (optional)
      * @return string The configuration root path without a trailing slash.
-     * @throws \RuntimeException
      * @throws InvalidConfigurationException
      */
     public function getDeploymentsBasePath($path = null)
     {
+        /** @var string $localDeploymentDescription */
         $localDeploymentDescription = @realpath('./.reverse');
         if (!$path && is_dir($localDeploymentDescription)) {
             $path = $localDeploymentDescription;
