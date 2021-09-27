@@ -1,6 +1,6 @@
 <?php
 
-namespace JoRo\Tests\Unit;
+namespace Unit\JoRo;
 
 use JoRo\Typo3ReverseDeployment;
 use PHPUnit\Framework\TestCase;
@@ -12,14 +12,16 @@ class Typo3ReverseDeploymentTest extends TestCase
      */
     protected $subject;
 
-    public function setUp() {
+    public function setUp(): void
+    {
         $this->subject = new Typo3ReverseDeployment;
     }
 
     /**
      * @test
      */
-    public function sqlExcludeTableSetterAndGetter() {
+    public function sqlExcludeTableSetterAndGetter(): void
+    {
         // set value
         $testArray = ['foo', 'bar'];
         $this->subject->setSqlExcludeTable($testArray);
@@ -32,7 +34,7 @@ class Typo3ReverseDeploymentTest extends TestCase
      * with function addExclude
      * @test
      */
-    public function folderSetExcludeOverrideAddExclude()
+    public function folderSetExcludeOverrideAddExclude(): void
     {
         $testAddExcludeArray = ['foo', 'bar', 'test'];
         $testSetExcludeArray = ['folder1', 'folder2'];
@@ -43,18 +45,18 @@ class Typo3ReverseDeploymentTest extends TestCase
     }
 
     /**
-     * Test if the temporary local path has an trailing slash
+     * Test if the temporary local path has a trailing slash
      * @test
      */
-    public function hasLocalTemporaryPathATrailingSlash()
+    public function hasLocalTemporaryPathATrailingSlash(): void
     {
-        $testPathWithoutSlash= '/var/www/my-project';
+        $testPathWithoutSlash = '/var/www/my-project';
         $expectedPath = $testPathWithoutSlash . '/';
 
         $this->subject->setLocalTempPath($testPathWithoutSlash);
         $this->assertSame($expectedPath, $this->subject->getLocalTempPath());
 
-        $testPathWithSlash= '/var/www/my-project/';
+        $testPathWithSlash = '/var/www/my-project/';
         $this->subject->setLocalTempPath($testPathWithSlash);
         $this->assertSame($expectedPath, $this->subject->getLocalTempPath());
     }
