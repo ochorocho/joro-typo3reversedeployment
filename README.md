@@ -11,7 +11,7 @@ Requirements:
 * [TYPO3 Console](https://packagist.org/packages/helhum/typo3-console) (>=4.6) on remote TYPO3 installation
 * A SSH connection to the remote server
 * `rsync` to download files
-* Works with TYPO3 7.x/8.x
+* Works with TYPO3 7.x/8.x/9.x/10.x
 
 :warning: In version 2.0.0 `...->ssh('example.org');
 changes to `...->setRemoteServer('example.org');

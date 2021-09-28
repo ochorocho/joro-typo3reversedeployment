@@ -1,10 +1,11 @@
-<?php
+<?php /** @noinspection PhpUnused */
+
 namespace JoRo;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-Class Typo3ReverseDeployment
+class Typo3ReverseDeployment
 {
     /**
      * @var string
@@ -67,7 +68,7 @@ Class Typo3ReverseDeployment
     /**
      * @var array $exclude
      */
-    protected $exclude = ["_processed_","_temp_","typo3conf","typo3","typo3temp","index.php"];
+    protected $exclude = ["_processed_", "_temp_", "typo3conf", "typo3", "typo3temp", "index.php"];
 
     /**
      * @var array $include
@@ -86,7 +87,18 @@ Class Typo3ReverseDeployment
      *
      * @var array $sqlExcludeTable
      */
-    protected $sqlExcludeTable = ["sys_log", "sys_history", "cf_cache_hash", "cf_cache_hash_tags", "cf_extbase_datamapfactory_datamap", "cf_extbase_datamapfactory_datamap_tags", "cf_extbase_object", "cf_extbase_object_tags", "cf_extbase_reflection", "cf_extbase_reflection_tags"];
+    protected $sqlExcludeTable = [
+        "sys_log",
+        "sys_history",
+        "cf_cache_hash",
+        "cf_cache_hash_tags",
+        "cf_extbase_datamapfactory_datamap",
+        "cf_extbase_datamapfactory_datamap_tags",
+        "cf_extbase_object",
+        "cf_extbase_object_tags",
+        "cf_extbase_reflection",
+        "cf_extbase_reflection_tags"
+    ];
 
     /**
      * Full path to PHP binary
@@ -110,9 +122,14 @@ Class Typo3ReverseDeployment
     protected $pathToConsoleExecutable = "../vendor/bin/typo3cms";
 
     /**
+     * @var string
+     */
+    protected $remoteServer;
+
+    /**
      * @return string
      */
-    public function getUser()
+    public function getUser(): string
     {
         return $this->user;
     }
@@ -122,7 +139,7 @@ Class Typo3ReverseDeployment
      *
      * @param string $user
      */
-    public function setUser($user)
+    public function setUser(string $user): void
     {
         $this->user = $user;
     }
@@ -132,11 +149,11 @@ Class Typo3ReverseDeployment
      *
      * @return string
      */
-    public function getPrivateKey()
+    public function getPrivateKey(): string
     {
-        if (substr($this->privateKey, 0, 2) == "~/") {
+        if (strpos($this->privateKey, "~/") === 0) {
             $this->privateKey = str_replace('~/', getenv("HOME") . '/', $this->privateKey);
-        };
+        }
 
         return $this->privateKey;
     }
@@ -146,7 +163,7 @@ Class Typo3ReverseDeployment
      *
      * @param string $privateKey
      */
-    public function setPrivateKey($privateKey)
+    public function setPrivateKey(string $privateKey): void
     {
         $this->privateKey = $privateKey;
     }
@@ -156,7 +173,8 @@ Class Typo3ReverseDeployment
      *
      * @return string
      */
-    public function getPrivateKeyPassphrase() {
+    public function getPrivateKeyPassphrase(): string
+    {
         return $this->privateKeyPassphrase;
     }
 
@@ -165,7 +183,7 @@ Class Typo3ReverseDeployment
      *
      * @return int
      */
-    public function getSshPort()
+    public function getSshPort(): int
     {
         return $this->sshPort;
     }
@@ -175,7 +193,7 @@ Class Typo3ReverseDeployment
      *
      * @param int $sshPort
      */
-    public function setSshPort($sshPort)
+    public function setSshPort(int $sshPort): void
     {
         $this->sshPort = $sshPort;
     }
@@ -183,7 +201,7 @@ Class Typo3ReverseDeployment
     /**
      * Build and return ssh port parameter
      */
-    public function getSshPortParam()
+    public function getSshPortParam(): string
     {
         return '-e "ssh -p ' . $this->getSshPort() . '"';
     }
@@ -193,7 +211,8 @@ Class Typo3ReverseDeployment
      *
      * @param string $privateKeyPassphrase
      */
-    public function setPrivateKeyPassphrase($privateKeyPassphrase) {
+    public function setPrivateKeyPassphrase(string $privateKeyPassphrase): void
+    {
         $this->privateKeyPassphrase = $privateKeyPassphrase;
     }
 
@@ -202,7 +221,7 @@ Class Typo3ReverseDeployment
      *
      * @return string
      */
-    public function getTypo3RootPath()
+    public function getTypo3RootPath(): string
     {
         return $this->typo3RootPath;
     }
@@ -212,7 +231,7 @@ Class Typo3ReverseDeployment
      *
      * @param string $typo3RootPath
      */
-    public function setTypo3RootPath($typo3RootPath)
+    public function setTypo3RootPath(string $typo3RootPath): void
     {
         $this->typo3RootPath = $typo3RootPath;
     }
@@ -222,7 +241,7 @@ Class Typo3ReverseDeployment
      *
      * @return string
      */
-    public function getConnectionPool()
+    public function getConnectionPool(): string
     {
         return $this->connectionPool;
     }
@@ -230,7 +249,7 @@ Class Typo3ReverseDeployment
     /**
      * @param string $connectionPool
      */
-    public function setConnectionPool($connectionPool)
+    public function setConnectionPool(string $connectionPool): void
     {
         $this->connectionPool = $connectionPool;
     }
@@ -238,7 +257,7 @@ Class Typo3ReverseDeployment
     /**
      * @return string
      */
-    public function getFileTarget()
+    public function getFileTarget(): string
     {
         return $this->fileTarget;
     }
@@ -246,7 +265,7 @@ Class Typo3ReverseDeployment
     /**
      * @param string $fileTarget
      */
-    public function setFileTarget($fileTarget)
+    public function setFileTarget(string $fileTarget): void
     {
         $this->fileTarget = $fileTarget;
     }
@@ -262,7 +281,7 @@ Class Typo3ReverseDeployment
     /**
      * @param int $fileadminOnlyUsed
      */
-    public function setFileadminOnlyUsed($fileadminOnlyUsed)
+    public function setFileadminOnlyUsed(int $fileadminOnlyUsed): void
     {
         $this->fileadminOnlyUsed = $fileadminOnlyUsed;
     }
@@ -270,7 +289,7 @@ Class Typo3ReverseDeployment
     /**
      * @return array
      */
-    public function getExclude()
+    public function getExclude(): array
     {
         return $this->exclude;
     }
@@ -278,7 +297,7 @@ Class Typo3ReverseDeployment
     /**
      * @param array $exclude
      */
-    public function setExclude($exclude)
+    public function setExclude(array $exclude): void
     {
         $this->exclude = $exclude;
     }
@@ -289,7 +308,7 @@ Class Typo3ReverseDeployment
      *
      * @param array $exclude
      */
-    public function addExclude($exclude)
+    public function addExclude(array $exclude): void
     {
         $this->exclude = array_merge($this->getExclude(), $exclude);
     }
@@ -299,7 +318,7 @@ Class Typo3ReverseDeployment
      *
      * @param array $exclude
      */
-    public function removeExclude($exclude)
+    public function removeExclude(array $exclude): void
     {
         $this->exclude = array_diff($this->getExclude(), $exclude);
     }
@@ -307,7 +326,7 @@ Class Typo3ReverseDeployment
     /**
      * @return array
      */
-    public function getInclude()
+    public function getInclude(): array
     {
         return $this->include;
     }
@@ -315,7 +334,7 @@ Class Typo3ReverseDeployment
     /**
      * @param array $include
      */
-    public function setInclude($include)
+    public function setInclude(array $include): void
     {
         $this->include = $include;
     }
@@ -326,7 +345,7 @@ Class Typo3ReverseDeployment
      *
      * @param array $include
      */
-    public function addInclude($include)
+    public function addInclude(array $include): void
     {
         $this->include = array_merge($this->getInclude(), $include);
     }
@@ -336,7 +355,7 @@ Class Typo3ReverseDeployment
      *
      * @param array $include
      */
-    public function removeInclude($include)
+    public function removeInclude(array $include): void
     {
         $this->include = array_diff($this->getInclude(), $include);
     }
@@ -344,7 +363,7 @@ Class Typo3ReverseDeployment
     /**
      * @return string
      */
-    public function getSqlTarget()
+    public function getSqlTarget(): string
     {
         return $this->sqlTarget;
     }
@@ -356,7 +375,7 @@ Class Typo3ReverseDeployment
      *
      * @param string $sqlTarget
      */
-    public function setSqlTarget($sqlTarget)
+    public function setSqlTarget(string $sqlTarget): void
     {
         $this->sqlTarget = $sqlTarget;
     }
@@ -366,7 +385,7 @@ Class Typo3ReverseDeployment
      *
      * @return array
      */
-    public function getSqlExcludeTable()
+    public function getSqlExcludeTable(): array
     {
         return $this->sqlExcludeTable;
     }
@@ -376,7 +395,7 @@ Class Typo3ReverseDeployment
      *
      * @param array $sqlExcludeTable
      */
-    public function setSqlExcludeTable($sqlExcludeTable)
+    public function setSqlExcludeTable(array $sqlExcludeTable): void
     {
         $this->sqlExcludeTable = $sqlExcludeTable;
     }
@@ -387,7 +406,7 @@ Class Typo3ReverseDeployment
      *
      * @param array $sqlExcludeTable
      */
-    public function addSqlExcludeTable($sqlExcludeTable)
+    public function addSqlExcludeTable(array $sqlExcludeTable): void
     {
         $this->sqlExcludeTable = array_merge($this->getSqlExcludeTable(), $sqlExcludeTable);
     }
@@ -397,7 +416,8 @@ Class Typo3ReverseDeployment
      *
      * @return string
      */
-    public function getPhpPathAndBinary() {
+    public function getPhpPathAndBinary(): string
+    {
         return $this->phpPathAndBinary;
     }
 
@@ -406,7 +426,8 @@ Class Typo3ReverseDeployment
      *
      * @param string $phpPathAndBinary
      */
-    public function setPhpPathAndBinary($phpPathAndBinary) {
+    public function setPhpPathAndBinary(string $phpPathAndBinary): void
+    {
         $this->phpPathAndBinary = $phpPathAndBinary;
     }
 
@@ -415,7 +436,7 @@ Class Typo3ReverseDeployment
      *
      * @return string
      */
-    public function getRsyncPathAndBinary()
+    public function getRsyncPathAndBinary(): string
     {
         return $this->rsyncPathAndBinary;
     }
@@ -425,7 +446,7 @@ Class Typo3ReverseDeployment
      *
      * @param string $rsyncPathAndBinary
      */
-    public function setRsyncPathAndBinary($rsyncPathAndBinary)
+    public function setRsyncPathAndBinary(string $rsyncPathAndBinary): void
     {
         $this->rsyncPathAndBinary = $rsyncPathAndBinary;
     }
@@ -435,7 +456,7 @@ Class Typo3ReverseDeployment
      *
      * @return string
      */
-    public function getPathToConsoleExecutable()
+    public function getPathToConsoleExecutable(): string
     {
         return $this->pathToConsoleExecutable;
     }
@@ -445,7 +466,7 @@ Class Typo3ReverseDeployment
      *
      * @param string $pathToConsoleExecutable
      */
-    public function setPathToConsoleExecutable($pathToConsoleExecutable)
+    public function setPathToConsoleExecutable(string $pathToConsoleExecutable): void
     {
         $this->pathToConsoleExecutable = $pathToConsoleExecutable;
     }
@@ -454,7 +475,7 @@ Class Typo3ReverseDeployment
      * Set remote server uri or IP-Address
      * @param string $remoteServer
      */
-    public function setRemoteServer($remoteServer)
+    public function setRemoteServer(string $remoteServer): void
     {
         $this->remoteServer = $remoteServer;
     }
@@ -463,25 +484,25 @@ Class Typo3ReverseDeployment
      * Get remote server uri or IP-Address
      * @return string
      */
-    public function getRemoteServer()
+    public function getRemoteServer(): string
     {
         return $this->remoteServer;
     }
 
     /**
-     * Get the temporary remote path, relativ to web root
+     * Get the temporary remote path, relative to web root
      * @return string
      */
-    public function getTempRemotePath()
+    public function getTempRemotePath(): string
     {
         return $this->tempRemotePath;
     }
 
     /**
-     * Set the temporary remote path, relativ to web root
+     * Set the temporary remote path, relative to web root
      * @param string $remotePath
      */
-    public function setTempRemotePath($remotePath)
+    public function setTempRemotePath(string $remotePath): void
     {
         $this->tempRemotePath = $remotePath;
     }
@@ -490,7 +511,7 @@ Class Typo3ReverseDeployment
      * Set a local temporary directory path
      * @return string
      */
-    public function getLocalTempPath()
+    public function getLocalTempPath(): string
     {
         return $this->tempLocalPath;
     }
@@ -499,33 +520,33 @@ Class Typo3ReverseDeployment
      * Path to a local directory
      * @param string $localTemporaryPath
      */
-    public function setLocalTempPath($localTemporaryPath)
+    public function setLocalTempPath(string $localTemporaryPath): void
     {
         $this->tempLocalPath = rtrim($localTemporaryPath, '/') . '/';
     }
 
     /**
-     * Execute an command on remote server
+     * Execute a command on remote server
      *
      * @param string $command Command to execute on remote server
      * @return array Array with exit code as first index and the command output as second index
      */
-    public function executeSshCommand($command)
+    public function executeSshCommand(string $command): array
     {
         $callback = null;
 
-        $sshOptions = ['-A'];
+        $sshCommand = ['ssh'];
+        $sshCommand[] = '-A';
         if ($this->getSshPort()) {
-            $sshOptions[] = '-p ' . escapeshellarg((int)$this->getSshPort());
+            $sshCommand[] = '-p ' . $this->getSshPort();
         }
 
         if ($this->getPrivateKey()) {
-            $sshOptions[] = '-i ' . escapeshellarg($this->getPrivateKey());
+            $sshCommand[] = '-i ' . $this->getPrivateKey();
         }
 
-        $sshCommand = 'ssh ' . implode(' ', $sshOptions) . ' '
-            . escapeshellarg($this->getUser() . '@' .  $this->getRemoteServer()) . ' '
-            . escapeshellarg($command);
+        $sshCommand[] = $this->getUser() . '@' . $this->getRemoteServer();
+        $sshCommand[] = $command;
 
         $process = new Process($sshCommand);
         $process->setTimeout(null);
@@ -543,49 +564,53 @@ Class Typo3ReverseDeployment
      * Load LocalConfiguration.php and return connection details as array
      *
      * @return array
+     * @throws ProcessException
      */
-    public function getLocalConfiguration()
+    public function getLocalConfiguration(): array
     {
         $remoteCommand =
             'cd ' . $this->getTypo3RootPath() . ' && '
             . $this->getPhpPathAndBinary() . ' ' . $this->getPathToConsoleExecutable() . ' configuration:showactive DB --json';
         $remoteCommandResult = $this->executeSshCommand($remoteCommand);
 
-        if ($remoteCommandResult[0] != 0) {
-            throw new Exception(
+        if ($remoteCommandResult[0] !== 0) {
+            throw new ProcessException(
                 'Could not get database connection on remote server, ' . $remoteCommandResult[0],
                 1549053038
             );
         }
 
+        /** @noinspection PhpComposerExtensionStubsInspection */
         $conf = json_decode($remoteCommandResult[1], true);
 
-        if(isset($conf['Connections'])) { // current TYPO3 versions
+        if (isset($conf['Connections'])) { // current TYPO3 versions
             return $conf['Connections'][$this->getConnectionPool()];
-        } else { // simple fallback for TYPO3 7
-            return [
-                'driver' => 'mysqli',
-                'host' => $conf['host'],
-                'user' => $conf['username'],
-                'password' => $conf['password'],
-                'dbname' => $conf['database']
-            ];
         }
+
+        // simple fallback for TYPO3 7
+        return [
+            'driver' => 'mysqli',
+            'host' => $conf['host'],
+            'user' => $conf['username'],
+            'password' => $conf['password'],
+            'dbname' => $conf['database']
+        ];
     }
 
     /**
      * Export and download database from remote TYPO3
      *
      * @return string
+     * @throws ProcessException
      */
-    public function getDatabase()
+    public function getDatabase(): string
     {
         $this->ensureRemoteDirectoryExists();
         $conf = $this->getLocalConfiguration();
 
         $ignoredTables = count($this->sqlExcludeTable) > 0 ? '--exclude-tables ' : '';
         foreach ($this->sqlExcludeTable as $exclude) {
-            $ignoredTables .= end($this->sqlExcludeTable) == $exclude ? $exclude . '' : $exclude . ',';
+            $ignoredTables .= end($this->sqlExcludeTable) === $exclude ? $exclude . '' : $exclude . ',';
         }
 
         // Export and download database
@@ -618,8 +643,9 @@ Class Typo3ReverseDeployment
      * - Download additional folders like ./uploads
      *
      * @return bool
+     * @throws ProcessException
      */
-    public function getFiles()
+    public function getFiles(): bool
     {
         $tempPhp = $this->getCreateTempFileForDownload();
         $filesFrom = ' --files-from=' . $tempPhp . ' ';
@@ -652,20 +678,23 @@ Class Typo3ReverseDeployment
     /**
      * Get all files referenced/used in this TYPO3 instance
      * @return string
+     * @throws ProcessException
      */
-    private function getCreateTempFileForDownload() {
+    private function getCreateTempFileForDownload(): string
+    {
         $this->ensureRemoteDirectoryExists();
         $conf = $this->getLocalConfiguration();
-        $tempPhp = ! empty($this->getLocalTempPath()) ?: sys_get_temp_dir();
+        $tempPhp = !empty($this->getLocalTempPath()) ?: sys_get_temp_dir();
         $tempPhp = rtrim($tempPhp, '/') . '/.rsync_files';
         $i = 0;
 
         $files = [];
-        if ($conf['driver'] == 'mysqli' && $this->getFileadminOnlyUsed()) {
 
-            if(!$conf['driver'] == 'mysqli') {
-                exit("\033[31mDatabase Driver " . $conf['driver'] . " not supported!\033[0m" . PHP_EOL);
-            }
+        // Download only used files
+        if (($conf['driver'] !== 'mysqli') && $this->getFileadminOnlyUsed()) {
+            exit("\033[31mDatabase Driver " . $conf['driver'] . " not supported!\033[0m" . PHP_EOL);
+        }
+        if ($conf['driver'] === 'mysqli' && $this->getFileadminOnlyUsed()) {
 
             /**
              * Select only files with references (only used files)
@@ -693,12 +722,12 @@ Class Typo3ReverseDeployment
              * Create .rsync_files containing a list of files to download
              * prefix with ./fileadmin
              */
-            $files = explode("\n", $filesUsed);
+            $files = explode("\n", $filesUsed[1]);
             $files = array_filter($files);
-            foreach($files as $file) {
-                $files[$i] =  '/fileadmin' . $file;
+            foreach ($files as $file) {
+                $files[$i] = '/fileadmin' . $file;
                 $i++;
-            };
+            }
         }
 
         foreach ($this->getInclude() as $include) {
@@ -718,7 +747,7 @@ Class Typo3ReverseDeployment
      *
      * @todo fetch exception
      */
-    protected function ensureRemoteDirectoryExists()
+    protected function ensureRemoteDirectoryExists(): void
     {
         $tempFolder = $this->getTypo3RootPath() . $this->getTempRemotePath();
         $htaccess = $tempFolder . '.htaccess';
@@ -729,7 +758,7 @@ Class Typo3ReverseDeployment
     }
 
     /**
-     * Catch undefined method calls and show hint to update to latest version.
+     * Catch undefined method calls and show hint to update to the latest version.
      *
      * @param $name
      * @param $args

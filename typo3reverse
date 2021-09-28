@@ -3,25 +3,32 @@
 
 foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php'] as $file) {
     if (file_exists($file)) {
-        /** @noinspection PhpIncludeInspection */
         require $file;
         break;
     }
 }
 
-use JoRo\ReversePath;
-
 $factory = new \JoRo\ReversePath();
 
-if(isset($argv[1]) && in_array($argv[1],$factory->getDeploymentNames())) {
-    $deploymentName = $argv[1];
+$deploymentNames = $factory->getDeploymentNames();
+if (empty($deploymentNames)) {
+    exit("\033[31mNo deployment configuration found!\033[0m" . PHP_EOL);
+}
+
+if (isset($argv[1])) {
+    if (in_array($argv[1], $deploymentNames, true)) {
+        $deploymentName = $argv[1];
+    } else {
+        echo "\033[31mConfiguration '" . $argv[1] . "' not found! Using first configuration...\033[0m" . PHP_EOL;
+        $deploymentName = $deploymentNames[0];
+    }
 } else {
-    $deploymentName = $factory->getDeploymentNames()[0];
+    $deploymentName = $deploymentNames[0];
 }
 
 $includeDeployment = $factory->getDeploymentsBasePath() . '/' . $deploymentName . ".php";
 
-if(is_file($includeDeployment)) {
+if (is_file($includeDeployment)) {
     echo "\033[32mStarting reverse deployment '" . $deploymentName . "' ...\033[0m" . PHP_EOL;
     include_once($includeDeployment);
 } else {
