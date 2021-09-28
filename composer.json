@@ -17,15 +17,5 @@
   "require-dev": {
     "phpunit/phpunit": "^9.5",
     "phpstan/phpstan": "^0.12.99"
-  },
-  "extra": {
-    "phar-builder": {
-      "compression": "GZip",
-      "name": "typo3reverse.phar",
-      "output-dir": "./",
-      "entry-point": "./typo3reverse",
-      "include": ["JoRo"],
-      "include-dev": false
-    }
   }
 }
