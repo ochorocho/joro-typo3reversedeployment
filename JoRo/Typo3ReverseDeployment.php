@@ -63,7 +63,7 @@ class Typo3ReverseDeployment
      *
      * @var int $fileadminOnlyUsed
      */
-    protected $fileadminOnlyUsed = false;
+    protected $fileadminOnlyUsed = 0;
 
     /**
      * @var array $exclude
@@ -760,10 +760,10 @@ class Typo3ReverseDeployment
     /**
      * Catch undefined method calls and show hint to update to the latest version.
      *
-     * @param $name
-     * @param $args
+     * @param string $name
+     * @param array $args
      */
-    public function __call($name, $args)
+    public function __call(string $name, array $args)
     {
         exit("\033[31mThe method '$name', which is used in your reverse deployment configuration, cannot be found in the installed version of joro/reversedeployment. Please install the latest version of joro/reversedeployment.\033[0m" . PHP_EOL);
     }

@@ -4,7 +4,7 @@
   "license": "GPL-3.0-or-later",
   "require": {
     "php": "^7.2 || ^8.0",
-    "symfony/process": "^2.7 || ^3.0 || ^4.0 || ^5.0"
+    "symfony/process": "^5.3"
   },
   "autoload": {
     "psr-4": {
@@ -15,8 +15,8 @@
     "typo3reverse"
   ],
   "require-dev": {
-    "macfja/phar-builder": "^0.2.7",
-    "phpunit/phpunit": "^8.0"
+    "phpunit/phpunit": "^9.5",
+    "phpstan/phpstan": "^0.12.99"
   },
   "extra": {
     "phar-builder": {
@@ -25,13 +25,7 @@
       "output-dir": "./",
       "entry-point": "./typo3reverse",
       "include": ["JoRo"],
-      "include-dev": false,
-      "events": {
-        "command.build.start": "",
-        "command.build.end": [
-          "chmod +x ./typo3reverse.phar"
-        ]
-      }
+      "include-dev": false
     }
   }
 }
