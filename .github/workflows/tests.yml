@@ -30,7 +30,7 @@ jobs:
               run: composer install --prefer-dist --no-progress
 
             - name: phpstan
-              run:  ./vendor/bin/phpstan analyse -l 6 JoRo Tests
+              run:  ./vendor/bin/phpstan analyse -l 4 JoRo Tests
 
             - name: Run unit tests
               run: ./vendor/bin/phpunit Tests/Unit/JoRo
