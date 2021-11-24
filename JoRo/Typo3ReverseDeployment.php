@@ -608,7 +608,7 @@ class Typo3ReverseDeployment
         $this->ensureRemoteDirectoryExists();
         $conf = $this->getLocalConfiguration();
 
-        $ignoredTables = count($this->sqlExcludeTable) > 0 ? '--exclude-tables ' : '';
+        $ignoredTables = count($this->sqlExcludeTable) > 0 ? '-e ' : '';
         foreach ($this->sqlExcludeTable as $exclude) {
             $ignoredTables .= end($this->sqlExcludeTable) === $exclude ? $exclude . '' : $exclude . ',';
         }
