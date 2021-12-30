@@ -610,7 +610,7 @@ class Typo3ReverseDeployment
 
         $ignoredTables = count($this->sqlExcludeTable) > 0 ? '-e ' : '';
         foreach ($this->sqlExcludeTable as $exclude) {
-            $ignoredTables .= end($this->sqlExcludeTable) === $exclude ? $exclude . '' : $exclude . ',';
+            $ignoredTables .= end($this->sqlExcludeTable) === $exclude ? $exclude . '' : $exclude . ' -e ';
         }
 
         // Export and download database
